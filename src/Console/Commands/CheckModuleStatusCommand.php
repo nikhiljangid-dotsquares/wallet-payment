@@ -16,7 +16,7 @@ class CheckModuleStatusCommand extends Command
         
         // Check if module files exist
         $moduleFiles = [
-            'Controller' => base_path('Modules/Wallets/app/Http/Controllers/Admin/WalletManagerController.php'),
+            'Controller' => base_path('Modules/Wallets/app/Http/Controllers/Admin/TransactionManagerController.php'),
             'Model' => base_path('Modules/Wallets/app/Models/Wallet.php'),
             'Model' => base_path('Modules/Wallets/app/Models/WalletTransaction.php'),
             'Model' => base_path('Modules/Wallets/app/Models/WithdrawRequest.php'),
@@ -41,7 +41,7 @@ class CheckModuleStatusCommand extends Command
         }
 
         // Check namespace in controller
-        $controllerPath = base_path('Modules/Wallets/app/Http/Controllers/Admin/WalletManagerController.php');
+        $controllerPath = base_path('Modules/Wallets/app/Http/Controllers/Admin/TransactionManagerController.php');
         if (File::exists($controllerPath)) {
             $content = File::get($controllerPath);
             if (str_contains($content, 'namespace Modules\Wallets\app\Http\Controllers\Admin;')) {

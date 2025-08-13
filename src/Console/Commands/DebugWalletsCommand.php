@@ -50,7 +50,7 @@ class DebugWalletsCommand extends Command
         
         // Check controller resolution
         $this->info("\n Controller Resolution:");
-        $controllerClass = 'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\WalletManagerController';
+        $controllerClass = 'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\TransactionManagerController';
         if (class_exists($controllerClass)) {
             $this->info(" Controller class exists: {$controllerClass}");
         } else {

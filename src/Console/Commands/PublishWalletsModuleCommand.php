@@ -42,7 +42,7 @@ class PublishWalletsModuleCommand extends Command
         
         $filesWithNamespaces = [
             // Controllers
-            $basePath . '/Controllers/WalletManagerController.php' => base_path('Modules/Wallets/app/Http/Controllers/Admin/WalletManagerController.php'),
+            $basePath . '/Controllers/TransactionManagerController.php' => base_path('Modules/Wallets/app/Http/Controllers/Admin/TransactionManagerController.php'),
             
             // Models
             $basePath . '/Models/Wallet.php' => base_path('Modules/Wallets/app/Models/Wallet.php'),
@@ -83,7 +83,7 @@ class PublishWalletsModuleCommand extends Command
             'use admin\\wallets\\Requests\\' => 'use Modules\\Wallets\\app\\Http\\Requests\\',
             
             // Class references in routes
-            'admin\\wallets\\Controllers\\WalletManagerController' => 'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\WalletManagerController',
+            'admin\\wallets\\Controllers\\TransactionManagerController' => 'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\TransactionManagerController',
         ];
 
         // Apply transformations

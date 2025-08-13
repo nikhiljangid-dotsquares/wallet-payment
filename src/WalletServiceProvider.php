@@ -169,11 +169,23 @@ class WalletServiceProvider extends ServiceProvider
     {
         // Update use statements for models and requests
         $content = str_replace(
-            'use admin\\wallets\\Models\\Category;',
-            'use Modules\\Wallets\\app\\Models\\Category;',
+            'use admin\\wallets\\Models\\Wallet;',
+            'use Modules\\Wallets\\app\\Models\\Wallet;',
             $content
         );
         
+        $content = str_replace(
+            'use admin\\wallets\\Models\\WalletTransaction;',
+            'use Modules\\Wallets\\app\\Models\\WalletTransaction;',
+            $content
+        );
+
+        $content = str_replace(
+            'use admin\\wallets\\Models\\WithdrawRequest;',
+            'use Modules\\Wallets\\app\\Models\\WithdrawRequest;',
+            $content
+        );
+
         $content = str_replace(
             'use admin\\wallets\\Requests\\CategoryCreateRequest;',
             'use Modules\\Wallets\\app\\Http\\Requests\\CategoryCreateRequest;',
