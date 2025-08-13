@@ -140,7 +140,7 @@ class WalletServiceProvider extends ServiceProvider
         // Define namespace mappings
         $namespaceTransforms = [
             // Main namespace transformations
-            'namespace admin\\wallets\\Controllers;' => 'namespace          Modules\\Wallets\\app\\Http\\Controllers\\Admin;',
+            'namespace admin\\wallets\\Controllers;' => 'namespace Modules\\Wallets\\app\\Http\\Controllers\\Admin;',
             'namespace admin\\wallets\\Models;' => 'namespace Modules\\Wallets\\app\\Models;',
             'namespace admin\\wallets\\Requests;' => 'namespace Modules\\Wallets\\app\\Http\\Requests;',
             
