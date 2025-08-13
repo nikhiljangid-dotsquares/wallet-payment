@@ -14,17 +14,10 @@ class WalletServiceProvider extends ServiceProvider
     {
         // Load Transactions Views
         $this->loadViewsFrom([
-            base_path('Modules/Wallets/resources/views/transactions'),
-            resource_path('views/admin/transactions'),
-            __DIR__ . '/../resources/views/transactions'
-        ], 'transactions');
-
-        // Load Withdraws Views
-        $this->loadViewsFrom([
-            base_path('Modules/Wallets/resources/views/withdraws'),
-            resource_path('views/admin/withdraws'),
-            __DIR__ . '/../resources/views/withdraws'
-        ], 'withdraws');
+            base_path('Modules/Wallets/resources/views/wallets'),
+            resource_path('views/admin/wallets'),
+            __DIR__ . '/../resources/views/wallets'
+        ], 'wallets');
 
         $this->mergeConfigFrom(__DIR__.'/../config/wallet.php', 'wallet.constants');
         $this->mergeConfigFrom(__DIR__ . '/../config/wallet.php', 'wallet.config');
