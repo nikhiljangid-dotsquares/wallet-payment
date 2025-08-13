@@ -15,15 +15,15 @@ class WalletServiceProvider extends ServiceProvider
         // Load routes, views, migrations from the package  
         $this->loadViewsFrom([
             base_path('Modules/Wallets/resources/views'), // Published module views first
-            resource_path('views/admin/transaction'), // Published views second
+            resource_path('views/admin/transactions'), // Published views second
             __DIR__ . '/../resources/views'      // Package views as fallback
-        ], 'transaction');
+        ], 'transactions');
 
         $this->mergeConfigFrom(__DIR__.'/../config/wallet.php', 'wallet.constants');
         
         // Also register module views with a specific namespace for explicit usage
         if (is_dir(base_path('Modules/Wallets/resources/views'))) {
-            $this->loadViewsFrom(base_path('Modules/Wallets/resources/views'), 'wallet-module');
+            $this->loadViewsFrom(base_path('Modules/Wallets/resources/views'), 'wallets-module');
         }
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
         // Also load migrations from published module if they exist
@@ -45,7 +45,7 @@ class WalletServiceProvider extends ServiceProvider
             __DIR__ . '/../config/' => base_path('Modules/Wallets/config/'),
             __DIR__ . '/../database/migrations' => base_path('Modules/Wallets/database/migrations'),
             __DIR__ . '/../resources/views' => base_path('Modules/Wallets/resources/views/'),
-        ], 'category');
+        ], 'wallet');
        
         $this->registerAdminRoutes();
     }
@@ -94,7 +94,7 @@ class WalletServiceProvider extends ServiceProvider
         // Define the files that need namespace transformation
         $filesWithNamespaces = [
             // Controllers
-            __DIR__ . '/../src/Controllers/WalletManagerController.php' => base_path('Modules/Wallets/app/Http/Controllers/Admin/WalletManagerController.php'),
+            __DIR__ . '/../src/Controllers/TransactionManagerController.php' => base_path('Modules/Wallets/app/Http/Controllers/Admin/TransactionManagerController.php'),
             
             // Models
             __DIR__ . '/../src/Models/Wallet.php' => base_path('Modules/Wallets/app/Models/Wallet.php'),
@@ -140,7 +140,7 @@ class WalletServiceProvider extends ServiceProvider
             'use admin\\wallets\\Requests\\' => 'use Modules\\Wallets\\app\\Http\\Requests\\',
             
             // Class references in routes
-            'admin\\wallets\\Controllers\\WalletManagerController' => 'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\WalletManagerController',
+            'admin\\wallets\\Controllers\\TransactionManagerController' => 'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\TransactionManagerController',
         ];
 
         // Apply transformations
@@ -214,8 +214,8 @@ class WalletServiceProvider extends ServiceProvider
     {
         // Update controller references in routes
         $content = str_replace(
-            'admin\\wallets\\Controllers\\WalletManagerController',
-            'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\WalletManagerController',
+            'admin\\wallets\\Controllers\\TransactionManagerController',
+            'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\TransactionManagerController',
             $content
         );
 
