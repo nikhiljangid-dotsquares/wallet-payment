@@ -12,14 +12,27 @@ class WalletServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        // Load routes, views, migrations from the package  
+        // Load Transactions Views
         $this->loadViewsFrom([
-            base_path('Modules/Wallets/resources/views'), // Published module views first
-            resource_path('views/admin/transactions'), // Published views second
-            __DIR__ . '/../resources/views'      // Package views as fallback
+            base_path('Modules/Wallets/resources/views/transactions'),
+            resource_path('views/admin/transactions'),
+            __DIR__ . '/../resources/views/transactions'
         ], 'transactions');
 
+        // Load Withdraws Views
+        $this->loadViewsFrom([
+            base_path('Modules/Wallets/resources/views/withdraws'),
+            resource_path('views/admin/withdraws'),
+            __DIR__ . '/../resources/views/withdraws'
+        ], 'withdraws');
+
         $this->mergeConfigFrom(__DIR__.'/../config/wallet.php', 'wallet.constants');
+        $this->mergeConfigFrom(__DIR__ . '/../config/wallet.php', 'wallet.config');
+
+        // Also merge config from published module if it exists
+        if (file_exists(base_path('Modules/Wallets/config/wallets.php'))) {
+            $this->mergeConfigFrom(base_path('Modules/Wallets/config/wallets.php'), 'wallet.config');
+        }
         
         // Also register module views with a specific namespace for explicit usage
         if (is_dir(base_path('Modules/Wallets/resources/views'))) {
@@ -29,11 +42,6 @@ class WalletServiceProvider extends ServiceProvider
         // Also load migrations from published module if they exist
         if (is_dir(base_path('Modules/Wallets/database/migrations'))) {
             $this->loadMigrationsFrom(base_path('Modules/Wallets/database/migrations'));
-        }
-        $this->mergeConfigFrom(__DIR__ . '/../config/wallet.php', 'wallet.config');
-        // Also merge config from published module if it exists
-        if (file_exists(base_path('Modules/Wallets/config/wallets.php'))) {
-            $this->mergeConfigFrom(base_path('Modules/Wallets/config/wallets.php'), 'wallet.config');
         }
         
         // Only publish automatically during package installation, not on every request
@@ -95,6 +103,8 @@ class WalletServiceProvider extends ServiceProvider
         $filesWithNamespaces = [
             // Controllers
             __DIR__ . '/../src/Controllers/TransactionManagerController.php' => base_path('Modules/Wallets/app/Http/Controllers/Admin/TransactionManagerController.php'),
+
+            __DIR__ . '/../src/Controllers/WithdrawManagerController.php' => base_path('Modules/Wallets/app/Http/Controllers/Admin/WithdrawManagerController.php'),
             
             // Models
             __DIR__ . '/../src/Models/Wallet.php' => base_path('Modules/Wallets/app/Models/Wallet.php'),
@@ -130,7 +140,7 @@ class WalletServiceProvider extends ServiceProvider
         // Define namespace mappings
         $namespaceTransforms = [
             // Main namespace transformations
-            'namespace admin\\wallets\\Controllers;' => 'namespace Modules\\Wallets\\app\\Http\\Controllers\\Admin;',
+            'namespace admin\\wallets\\Controllers;' => 'namespace          Modules\\Wallets\\app\\Http\\Controllers\\Admin;',
             'namespace admin\\wallets\\Models;' => 'namespace Modules\\Wallets\\app\\Models;',
             'namespace admin\\wallets\\Requests;' => 'namespace Modules\\Wallets\\app\\Http\\Requests;',
             
@@ -141,6 +151,8 @@ class WalletServiceProvider extends ServiceProvider
             
             // Class references in routes
             'admin\\wallets\\Controllers\\TransactionManagerController' => 'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\TransactionManagerController',
+
+            'admin\\wallets\\Controllers\\WithdrawManagerController' => 'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\WithdrawManagerController',
         ];
 
         // Apply transformations
@@ -228,6 +240,12 @@ class WalletServiceProvider extends ServiceProvider
         $content = str_replace(
             'admin\\wallets\\Controllers\\TransactionManagerController',
             'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\TransactionManagerController',
+            $content
+        );
+
+         $content = str_replace(
+            'admin\\wallets\\Controllers\\WithdrawManagerController',
+            'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\WithdrawManagerController',
             $content
         );
 

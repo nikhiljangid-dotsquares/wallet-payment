@@ -43,6 +43,7 @@ class PublishWalletsModuleCommand extends Command
         $filesWithNamespaces = [
             // Controllers
             $basePath . '/Controllers/TransactionManagerController.php' => base_path('Modules/Wallets/app/Http/Controllers/Admin/TransactionManagerController.php'),
+            $basePath . '/Controllers/WithdrawManagerController.php' => base_path('Modules/Wallets/app/Http/Controllers/Admin/WithdrawManagerController.php'),
             
             // Models
             $basePath . '/Models/Wallet.php' => base_path('Modules/Wallets/app/Models/Wallet.php'),

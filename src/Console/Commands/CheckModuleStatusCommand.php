@@ -16,7 +16,8 @@ class CheckModuleStatusCommand extends Command
         
         // Check if module files exist
         $moduleFiles = [
-            'Controller' => base_path('Modules/Wallets/app/Http/Controllers/Admin/TransactionManagerController.php'),
+            'Controller: TransactionManagerController' => base_path('Modules/Wallets/app/Http/Controllers/Admin/TransactionManagerController.php'),
+            'Controller: WithdrawManagerController' => base_path('Modules/Wallets/app/Http/Controllers/Admin/WithdrawManagerController.php'),
             'Model' => base_path('Modules/Wallets/app/Models/Wallet.php'),
             'Model' => base_path('Modules/Wallets/app/Models/WalletTransaction.php'),
             'Model' => base_path('Modules/Wallets/app/Models/WithdrawRequest.php'),
@@ -41,20 +42,28 @@ class CheckModuleStatusCommand extends Command
         }
 
         // Check namespace in controller
-        $controllerPath = base_path('Modules/Wallets/app/Http/Controllers/Admin/TransactionManagerController.php');
-        if (File::exists($controllerPath)) {
-            $content = File::get($controllerPath);
-            if (str_contains($content, 'namespace Modules\Wallets\app\Http\Controllers\Admin;')) {
-                $this->info("\n Controller namespace: CORRECT");
-            } else {
-                $this->error("\n Controller namespace: INCORRECT");
-            }
-            
-            // Check for test comment
-            if (str_contains($content, 'Test comment - this should persist after refresh')) {
-                $this->info("Test comment: FOUND (changes are persisting)");
-            } else {
-                $this->warn("Test comment: NOT FOUND");
+        // $controllerPath = base_path('Modules/Wallets/app/Http/Controllers/Admin/TransactionManagerController.php');
+        // $controllerPath = base_path('Modules/Wallets/app/Http/Controllers/Admin/WithdrawManagerController.php');
+        $controllers = [
+            base_path('Modules/Wallets/app/Http/Controllers/Admin/TransactionManagerController.php'),
+            base_path('Modules/Wallets/app/Http/Controllers/Admin/WithdrawManagerController.php'),
+        ];
+
+        foreach ($controllers as $controllerPath) {
+            if (File::exists($controllerPath)) {
+                $content = File::get($controllerPath);
+                if (str_contains($content, 'namespace Modules\Wallets\app\Http\Controllers\Admin;')) {
+                    $this->info("\n Controller namespace: CORRECT");
+                } else {
+                    $this->error("\n Controller namespace: INCORRECT");
+                }
+                
+                // Check for test comment
+                if (str_contains($content, 'Test comment - this should persist after refresh')) {
+                    $this->info("Test comment: FOUND (changes are persisting)");
+                } else {
+                    $this->warn("Test comment: NOT FOUND");
+                }
             }
         }
 

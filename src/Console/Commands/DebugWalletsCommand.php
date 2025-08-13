@@ -50,20 +50,32 @@ class DebugWalletsCommand extends Command
         
         // Check controller resolution
         $this->info("\n Controller Resolution:");
-        $controllerClass = 'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\TransactionManagerController';
-        if (class_exists($controllerClass)) {
-            $this->info(" Controller class exists: {$controllerClass}");
-        } else {
-            $this->error(" Controller class not found: {$controllerClass}");
+        $controllers = [
+            'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\TransactionManagerController',
+            'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\WithdrawManagerController',
+        ];
+        foreach ($controllers as $controllerClass) {
+            if (class_exists($controllerClass)) {
+                $this->info(" Controller class exists: {$controllerClass}");
+            } else {
+                $this->error(" Controller class not found: {$controllerClass}");
+            }
         }
 
         // Check model resolution
         $this->info("\n Model Resolution:");
-        $modelClass = 'Modules\\Wallets\\app\\Models\\Wallet';
-        if (class_exists($modelClass)) {
-            $this->info(" Model class exists: {$modelClass}");
-        } else {
-            $this->error(" Model class not found: {$modelClass}");
+        $models = [
+            'Modules\\Wallets\\app\\Models\\Wallet',
+            'Modules\\Wallets\\app\\Models\\WalletTransaction',
+            'Modules\\Wallets\\app\\Models\\WithdrawRequest',
+        ];
+        
+        foreach ($models as $modelClass) {
+            if (class_exists($modelClass)) {
+                $this->info(" Model class exists: {$modelClass}");
+            } else {
+                $this->error(" Model class not found: {$modelClass}");
+            }
         }
 
         $this->info("\n Recommendations:");
