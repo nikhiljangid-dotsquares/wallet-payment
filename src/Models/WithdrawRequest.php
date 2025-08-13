@@ -4,14 +4,13 @@ namespace admin\wallets\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Config;
 use Kyslik\ColumnSortable\Sortable;
 use App\Models\User;
 
 class WithdrawRequest extends Model
 {
-    use HasFactory, SoftDeletes, Sortable;
+    use HasFactory, Sortable;
 
     /**
      * The attributes that are mass assignable.
