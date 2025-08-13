@@ -14,13 +14,18 @@ class WalletServiceProvider extends ServiceProvider
     {
         /**
          * Load views
-         * - First priority: published views in `resources/views/vendor/wallets`
-         * - Second priority: package views in `wallets/resources/views`
+         * - First priority: published views in `resources/views/vendor/wallet`
+         * - Second priority: package views in `resources/views`
          */
         $this->loadViewsFrom([
-            resource_path('views/vendor/wallets'),   // if developer publishes & overrides views
-            __DIR__ . '/../wallets/resources/views' // package's own view folder
-        ], 'wallets');
+            resource_path('views/vendor/wallet'),   // if developer publishes & overrides views
+            __DIR__ . '/../resources/views' // package's own view folder
+        ], 'wallet');
+
+        // Also register module views with a specific namespace for explicit usage
+        if (is_dir(base_path('Modules/Wallets/resources/views'))) {
+            $this->loadViewsFrom(base_path('Modules/Wallets/resources/views'), 'wallets-module');
+        }
 
         /**
          * Merge config

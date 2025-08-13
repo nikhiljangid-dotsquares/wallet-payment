@@ -1,5 +1,14 @@
-@extends('backend.layouts.app')
-@section('title', 'Withdrawal Requests')
+@extends('admin::admin.layouts.master')
+
+@section('title', 'Withdrawal Request Details')
+
+@section('page-title', 'Withdrawal Manager')
+
+@section('breadcrumb')
+    <li class="breadcrumb-item"><a href="{{ route('admin.withdraws.index') }}">Withdrawal Manager</a></li>
+    <li class="breadcrumb-item active" aria-current="page">View Withdrawal Request</li>
+@endsection
+
 @section('content')
 
 @php
@@ -12,38 +21,20 @@ if($withdraw->status == 'declined') {
     $statusClass = 'danger';
 }
 @endphp
-<div class="container-fluid">
-    <div class="row page-titles">
-        <div class="col-md-5 align-self-center">
-            <h4 class="text-themecolor">View Withdrawal Request</h4>
-        </div>
-        <div class="col-md-7 align-self-center text-right">
-            <div class="d-flex justify-content-end align-items-center">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a>
-                    </li>
-                    <li class="breadcrumb-item "><a href="{{ route('admin.withdraws.index') }}">Withdrawal Requests</a>
-                    </li>
-                    <li class="breadcrumb-item active">View Withdrawal Request</li>
-                </ol>
-            </div>
-        </div>
-    </div>
 
-    <div class="content-wrapper">
-        <section class="content">
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <!-- /.card-header -->
-                        <div class="card-body">
-                            <div class="card-title" style="width:100%;display: inline-block;">
-                                <a href="{{ route('admin.withdraws.index') }}">
-                                    <button type="button" class="btn btn-primary btn-sm float-right">
-                                        <i class="fa fa-arrow-left"></i> Back
-                                    </button>
-                                </a>
-                            </div>
+    <!-- Container fluid  -->
+    <div class="container-fluid">
+        <!-- Start withdrawal Content -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="card-title">Withdrawal Request Details</h4>
+                            <a href="{{ route('admin.withdraws.index') }}" class="btn btn-primary btn-sm">
+                                <i class="fa fa-arrow-left"></i> Back
+                            </a>
+                        </div>
 
                             <table id="user" class="table table-bordered table-striped">
                                 <tbody>
@@ -112,8 +103,6 @@ if($withdraw->status == 'declined') {
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
     </div>
-   
-</div>
 @endsection
