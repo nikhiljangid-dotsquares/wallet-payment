@@ -1,0 +1,22 @@
+{
+    "name": "admin/wallets",
+    "description": "Wallets to structure content or products for easier navigation and management.",
+    "type": "library",
+    "version": "1.0.0",  
+    "license": "MIT",
+    "autoload": {
+      "psr-4": {
+        "admin\\wallets\\": "src/"
+      }
+    },
+    "extra": { 
+      "laravel": {
+        "providers": [
+          "admin\\wallets\\WalletServiceProvider"
+        ]
+      }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+  }
+  
