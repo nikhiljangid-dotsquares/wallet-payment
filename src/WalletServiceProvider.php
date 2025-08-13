@@ -40,9 +40,9 @@ class WalletServiceProvider extends ServiceProvider
          * Publish package files for customization
          */
         $this->publishes([
-            __DIR__ . '/../config/wallet.php' => config_path('wallet.php'),
-            __DIR__ . '/../wallets/resources/views' => resource_path('views/vendor/wallets'),
-            __DIR__ . '/../database/migrations' => database_path('migrations'),
+            __DIR__ . '/../config/' => base_path('Modules/Wallets/config/'),
+            __DIR__ . '/../database/migrations' => base_path('Modules/Wallets/database/migrations'),
+            __DIR__ . '/../resources/views' => base_path('Modules/Wallets/resources/views/'),
         ], 'wallet');
 
         /**
