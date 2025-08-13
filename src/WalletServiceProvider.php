@@ -13,10 +13,9 @@ class WalletServiceProvider extends ServiceProvider
     public function boot()
     {
         // Load Transactions Views
-        $this->loadViewsFrom([
-            base_path('Modules/Wallets/resources/views/wallets'),
-            resource_path('views/admin/wallets'),
-            __DIR__ . '/../resources/views/wallets'
+       $this->loadViewsFrom([
+            __DIR__ . '/../wallets/resources/views', // package views (inside "wallets/resources/views")
+            resource_path('views/vendor/wallets'),   // published views
         ], 'wallets');
 
         $this->mergeConfigFrom(__DIR__.'/../config/wallet.php', 'wallet.constants');
@@ -227,21 +226,75 @@ class WalletServiceProvider extends ServiceProvider
     /**
      * Transform route-specific namespaces
      */
-    protected function transformRouteNamespaces($content)
+   public function boot()
     {
-        // Update controller references in routes
-        $content = str_replace(
-            'admin\\wallets\\Controllers\\TransactionManagerController',
-            'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\TransactionManagerController',
-            $content
-        );
+        /**
+         * Load views
+         * - First priority: published views in `resources/views/vendor/wallets`
+         * - Second priority: package views in `wallets/resources/views`
+         */
+        $this->loadViewsFrom([
+            resource_path('views/vendor/wallets'),   // if developer publishes & overrides views
+            __DIR__ . '/../wallets/resources/views' // package's own view folder
+        ], 'wallets');
 
-         $content = str_replace(
-            'admin\\wallets\\Controllers\\WithdrawManagerController',
-            'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\WithdrawManagerController',
-            $content
-        );
+        /**
+         * Merge config
+         */
+        $this->mergeConfigFrom(__DIR__ . '/../config/wallet.php', 'wallet');
 
-        return $content;
+        /**
+         * Load migrations from package + published module
+         */
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+
+        if (is_dir(base_path('Modules/Wallets/database/migrations'))) {
+            $this->loadMigrationsFrom(base_path('Modules/Wallets/database/migrations'));
+        }
+
+        /**
+         * Publish package files for customization
+         */
+        $this->publishes([
+            __DIR__ . '/../config/wallet.php' => config_path('wallet.php'),
+            __DIR__ . '/../wallets/resources/views' => resource_path('views/vendor/wallets'),
+            __DIR__ . '/../database/migrations' => database_path('migrations'),
+        ], 'wallet');
+
+        /**
+         * Register admin routes
+         */
+        $this->registerAdminRoutes();
+    }
+
+    protected function registerAdminRoutes()
+    {
+        if (!Schema::hasTable('admins')) {
+            return; // Avoid errors before migrations are run
+        }
+
+        $admin = DB::table('admins')->orderBy('created_at', 'asc')->first();
+        $slug = $admin->website_slug ?? 'admin';
+
+        Route::middleware('web')
+            ->prefix("{$slug}/admin")
+            ->group(function () {
+                if (file_exists(base_path('Modules/Wallets/routes/web.php'))) {
+                    $this->loadRoutesFrom(base_path('Modules/Wallets/routes/web.php'));
+                } else {
+                    $this->loadRoutesFrom(__DIR__ . '/routes/web.php');
+                }
+            });
+    }
+
+    public function register()
+    {
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                \admin\wallets\Console\Commands\PublishWalletsModuleCommand::class,
+                \admin\wallets\Console\Commands\CheckModuleStatusCommand::class,
+                \admin\wallets\Console\Commands\DebugWalletsCommand::class,
+            ]);
+        }
     }
 }
