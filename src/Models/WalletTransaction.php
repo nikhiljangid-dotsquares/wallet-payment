@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Config;
 use Kyslik\ColumnSortable\Sortable;
+use App\Models\User;
 
 class WalletTransaction extends Model
 {
