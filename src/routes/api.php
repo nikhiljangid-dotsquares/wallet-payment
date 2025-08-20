@@ -1,11 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use admin\wallets\Controllers\Api\V1\WelletStripeController;
+use admin\wallets\Controllers\Api\V1\WalletStripeController;
 use admin\wallets\Controllers\Api\V1\WalletController;
 
 Route::name('api.')->middleware(['api','auth:sanctum'])->group(function () {  
-    Route::get('connect-stripe', [WelletStripeController::class, 'connectStripe']);
+    Route::get('connect-stripe', [WalletStripeController::class, 'connectStripe']);
 
     // Wallet API
     Route::prefix('wallet')->group(function () {

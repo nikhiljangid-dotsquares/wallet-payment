@@ -48,6 +48,10 @@ class WalletServiceProvider extends ServiceProvider
             __DIR__ . '/../resources/views'        => resource_path('views/vendor/wallet'),
         ], 'wallet');
 
+        $this->publishes([
+            __DIR__ . '/../resources/views'        => base_path('Modules/Wallets/resources/views'),
+        ], 'wallet');
+
         /**
          * Register routes
          */

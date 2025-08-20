@@ -44,7 +44,7 @@ class PublishWalletsModuleCommand extends Command
             $basePath . '/Controllers/Admin/WalletWithdrawController.php'   => base_path('Modules/Wallets/app/Http/Controllers/Admin/WalletWithdrawController.php'),
 
             // Controllers Api
-            $basePath . '/Controllers/Api/V1/WelletStripeController.php' => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/WelletStripeController.php'),
+            $basePath . '/Controllers/Api/V1/WalletStripeController.php' => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/WalletStripeController.php'),
             $basePath . '/Controllers/Api/V1/WalletController.php' => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/WalletController.php'),
 
             // Models
@@ -99,6 +99,8 @@ class PublishWalletsModuleCommand extends Command
         // Replace use statements
         $content = str_replace('use admin\\wallets\\Models\\', 'use Modules\\Wallets\\app\\Models\\', $content);
         $content = str_replace('use admin\\wallets\\Requests\\', 'use Modules\\Wallets\\app\\Http\\Requests\\', $content);
+        $content = str_replace('use admin\\wallets\\Controllers\\Admin\\', 'use Modules\\Wallets\\app\\Http\\Controllers\\Admin\\', $content);
+        $content = str_replace('use admin\\wallets\\Controllers\\Api\\V1\\', 'use Modules\\Wallets\\app\\Http\\Controllers\\Api\\V1\\', $content);
 
         // Fix route controller references
         $content = str_replace(
@@ -112,8 +114,8 @@ class PublishWalletsModuleCommand extends Command
             $content
         );
         $content = str_replace(
-            'admin\\wallets\\Controllers\\WelletStripeController',
-            'Modules\\Wallets\\app\\Http\\Controllers\\Api\\V1\\WelletStripeController',
+            'admin\\wallets\\Controllers\\WalletStripeController',
+            'Modules\\Wallets\\app\\Http\\Controllers\\Api\\V1\\WalletStripeController',
             $content
         );
         $content = str_replace(
