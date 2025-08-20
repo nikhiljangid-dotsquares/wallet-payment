@@ -1,6 +1,6 @@
 <?php
 
-namespace admin\wallets\Controllers\Admin;
+namespace admin\wallets\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
