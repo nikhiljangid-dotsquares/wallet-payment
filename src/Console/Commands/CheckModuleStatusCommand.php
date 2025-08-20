@@ -26,7 +26,7 @@ class CheckModuleStatusCommand extends Command
             'Routes: web.php'                          => base_path('Modules/Wallets/routes/web.php'),
             'Routes: api.php'                          => base_path('Modules/Wallets/routes/api.php'),
             'Views'                                    => base_path('Modules/Wallets/resources/views'),
-            'Config'                                   => base_path('Modules/Wallets/config/wallets.php'),
+            'Config'                                   => base_path('Modules/Wallets/config/wallet.php'),
         ];
 
         $this->info("\n📂 Module Files Status:");

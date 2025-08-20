@@ -23,7 +23,7 @@ class PublishWalletsModuleCommand extends Command
 
         // Publish config & views from package (if defined in service provider)
         $this->callSilent('vendor:publish', [
-            '--tag'   => 'wallets',
+            '--tag'   => 'wallet',
             '--force' => $this->option('force')
         ]);
 
@@ -36,19 +36,19 @@ class PublishWalletsModuleCommand extends Command
 
     protected function publishWithNamespaceTransformation()
     {
-        $basePath = dirname(dirname(__DIR__)); // packages/admin/wallets/src
+        $basePath = dirname(dirname(__DIR__)); // .../wallets/src
 
         $files = [
             // Controllers Admin
-            $basePath . '/Controllers/TransactionManagerController.php' => base_path('Modules/Wallets/app/Http/Controllers/Admin/TransactionManagerController.php'),
-            $basePath . '/Controllers/WithdrawManagerController.php'   => base_path('Modules/Wallets/app/Http/Controllers/Admin/WithdrawManagerController.php'),
+            $basePath . '/Controllers/Admin/TransactionManagerController.php' => base_path('Modules/Wallets/app/Http/Controllers/Admin/TransactionManagerController.php'),
+            $basePath . '/Controllers/Admin/WithdrawManagerController.php'   => base_path('Modules/Wallets/app/Http/Controllers/Admin/WithdrawManagerController.php'),
 
             // Controllers Api
-            $basePath . '/Controllers/StripeController.php' => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/StripeController.php'),
-            $basePath . '/Controllers/WalletController.php' => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/WalletController.php'),
+            $basePath . '/Controllers/Api/V1/StripeController.php' => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/StripeController.php'),
+            $basePath . '/Controllers/Api/V1/WalletController.php' => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/WalletController.php'),
 
             // Models
-            $basePath . '/Models/Wallet.php'           => base_path('Modules/Wallets/app/Models/Wallet.php'),
+            $basePath . '/Models/Wallet.php'            => base_path('Modules/Wallets/app/Models/Wallet.php'),
             $basePath . '/Models/WalletTransaction.php' => base_path('Modules/Wallets/app/Models/WalletTransaction.php'),
             $basePath . '/Models/WithdrawRequest.php'   => base_path('Modules/Wallets/app/Models/WithdrawRequest.php'),
 
@@ -78,13 +78,13 @@ class PublishWalletsModuleCommand extends Command
         // Decide namespace based on destination path
         if (str_contains($destination, '/Controllers/Admin/')) {
             $content = str_replace(
-                'namespace admin\\wallets\\Controllers;',
+                'namespace admin\\wallets\\Controllers\\Admin;',
                 'namespace Modules\\Wallets\\app\\Http\\Controllers\\Admin;',
                 $content
             );
         } elseif (str_contains($destination, '/Controllers/Api/')) {
             $content = str_replace(
-                'namespace admin\\wallets\\Controllers;',
+                'namespace admin\\wallets\\Controllers\\Api\\V1;',
                 'namespace Modules\\Wallets\\app\\Http\\Controllers\\Api\\V1;',
                 $content
             );
