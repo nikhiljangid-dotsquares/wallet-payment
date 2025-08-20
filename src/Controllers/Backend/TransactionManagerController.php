@@ -1,14 +1,12 @@
 <?php
 
-namespace admin\wallets\Controllers;
+namespace admin\wallets\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use admin\wallets\Models\WithdrawRequest;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use admin\wallets\Models\WalletTransaction;
 
-class WithdrawManagerController extends Controller
+class TransactionManagerController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,7 +17,7 @@ class WithdrawManagerController extends Controller
             $search = $request->query('keyword');
             $status = $request->query('status');
 
-            $withdrawList = WithdrawRequest::with('user')
+            $transactions = WalletTransaction::with('user')
                             ->whereHas('user', function ($query) use ($search) {
                                 if (!empty($search)) {
                                     $query->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"]);
@@ -28,26 +26,26 @@ class WithdrawManagerController extends Controller
                             ->filterByStatus($status)
                             ->sortable()
                             ->latest()
-                            ->paginate(WithdrawRequest::getPerPageLimit())
+                            ->paginate(WalletTransaction::getPerPageLimit())
                             ->withQueryString();
 
-            return view('wallet::admin.withdraws.index', compact('withdrawList'));
+            return view('wallet::admin.transactions.index', compact('transactions'));
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Failed to load withdraws: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to load transactions: ' . $e->getMessage());
         }
     }
 
     /**
      * show wallet details
      */
-    public function show(WithdrawRequest $WithdrawRequest)
+    public function show(WalletTransaction $walletTransaction)
     {
         try {
-            return view('wallet::admin.withdraws.show', [
-                'withdraw' => $WithdrawRequest
+            return view('wallet::admin.transactions.show', [
+                'transaction' => $walletTransaction
             ]);
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Failed to load withdraws: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to load transactions: ' . $e->getMessage());
         }
     }
 }

@@ -1,11 +1,11 @@
 @extends('admin::admin.layouts.master')
 
-@section('title', 'Withdrawal Requests')
+@section('title', 'Wallet Withdrawal Requests')
 
-@section('page-title', 'Withdrawal Manager')
+@section('page-title', 'Wallet Withdrawal Manager')
 
 @section('breadcrumb')
-    <li class="breadcrumb-item active" aria-current="page">Withdrawal Manager</li>
+    <li class="breadcrumb-item active" aria-current="page">Wallet Withdrawal Manager</li>
 @endsection
 
 @section('content')

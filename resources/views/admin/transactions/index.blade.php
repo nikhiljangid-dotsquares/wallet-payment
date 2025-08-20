@@ -1,11 +1,11 @@
 @extends('admin::admin.layouts.master')
 
-@section('title', 'Transactions Management')
+@section('title', 'Wallet Transactions Management')
 
-@section('page-title', 'Transaction Manager')
+@section('page-title', 'Wallet Transaction Manager')
 
 @section('breadcrumb')
-    <li class="breadcrumb-item active" aria-current="page">Transaction Manager</li>
+    <li class="breadcrumb-item active" aria-current="page">Wallet Transaction Manager</li>
 @endsection
 
 @php
