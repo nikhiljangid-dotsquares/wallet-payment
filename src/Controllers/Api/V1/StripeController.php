@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 use Stripe\Stripe;
 use Stripe\Account;
 use Stripe\Customer;
-use admin\wallets\Models\User;
+use Stripe\StripeClient;
+use App\Models\User;
 use Illuminate\Support\Facades\Log;
 
 
@@ -15,7 +16,7 @@ class StripeController extends Controller
 {
     public function __construct()
     {
-        Stripe::setApiKey(config('services.stripe.secretKey'));
+        Stripe::setApiKey(config('services.stripe.secret'));
     }
 
     protected function respond($status, $code, $message, $data = [])
@@ -43,7 +44,7 @@ class StripeController extends Controller
             $user = $this->getUserOrFail();
             if (!$user instanceof User) return $user; // return JSON if not logged in
 
-            if ($user->stripe_payouts_enabled == 0) {
+            if ((int)($user->stripe_payouts_enabled ?? 0) === 0) {
                 $this->createConnectedAccount($user);
 
                 $user = User::find($user->id);
@@ -51,11 +52,11 @@ class StripeController extends Controller
                     return $this->respond(false, 401, 'Please login again.');
                 }
 
-                $stripe   = new StripeClient(config('services.stripe.secretKey'));
+                $stripe   = new StripeClient(config('services.stripe.secret'));
                 $acctlink = $stripe->accountLinks->create([
                     'account'     => $user->stripe_account_id,
                     'refresh_url' => 'https://connect.stripe.com/reauth',
-                    'return_url'  => route('stripe.redirect', $user->stripe_token),
+                    'return_url'  => url('/'),
                     'type'        => 'account_onboarding',
                 ]);
 
@@ -78,7 +79,7 @@ class StripeController extends Controller
             return $checkuser->stripe_account_id;
         }
 
-        $stripe = new StripeClient(config('services.stripe.secretKey'));
+        $stripe = new StripeClient(config('services.stripe.secret'));
 
         // Ensure Stripe customer exists
         if (!$checkuser->stripe_customer_id) {

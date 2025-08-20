@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use admin\wallets\Controllers\Backend\TransactionManagerController;
-use admin\wallets\Controllers\Backend\WithdrawManagerController;
+use admin\wallets\Controllers\Admin\TransactionManagerController;
+use admin\wallets\Controllers\Admin\WithdrawManagerController;
 
 Route::name('admin.')->middleware(['web','admin.auth'])->group(function () {  
     // Withdraw Request Routes

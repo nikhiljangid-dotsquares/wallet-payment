@@ -14,18 +14,16 @@ class WalletServiceProvider extends ServiceProvider
     {
         /**
          * Load views
-         * - First priority: published views in `resources/views/vendor/wallet`
-         * - Second priority: package views in `resources/views`
+         * Priority:
+         *  1. Published overrides: resources/views/vendor/wallet
+         *  2. Module views: Modules/Wallets/resources/views
+         *  3. Package views: packages/admin/wallets/resources/views
          */
         $this->loadViewsFrom([
-            resource_path('views/vendor/wallet'),   // if developer publishes & overrides views
-            __DIR__ . '/../resources/views' // package's own view folder
+            resource_path('views/vendor/wallet'),
+            base_path('Modules/Wallets/resources/views'),
+            __DIR__ . '/../resources/views',
         ], 'wallet');
-
-        // Also register module views with a specific namespace for explicit usage
-        if (is_dir(base_path('Modules/Wallets/resources/views'))) {
-            $this->loadViewsFrom(base_path('Modules/Wallets/resources/views'), 'wallets-module');
-        }
 
         /**
          * Merge config
@@ -33,7 +31,7 @@ class WalletServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/../config/wallet.php', 'wallet');
 
         /**
-         * Load migrations from package + published module
+         * Load migrations from both package + module
          */
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 
@@ -45,21 +43,23 @@ class WalletServiceProvider extends ServiceProvider
          * Publish package files for customization
          */
         $this->publishes([
-            __DIR__ . '/../config/' => base_path('Modules/Wallets/config/'),
-            __DIR__ . '/../database/migrations' => base_path('Modules/Wallets/database/migrations'),
-            __DIR__ . '/../resources/views' => base_path('Modules/Wallets/resources/views/'),
+            __DIR__ . '/../config/wallet.php'      => config_path('wallet.php'),
+            __DIR__ . '/../database/migrations'    => base_path('Modules/Wallets/database/migrations'),
+            __DIR__ . '/../resources/views'        => resource_path('views/vendor/wallet'),
         ], 'wallet');
 
         /**
-         * Register admin routes
+         * Register routes
          */
         $this->registerAdminRoutes();
+        $this->registerApiRoutes();
     }
 
     protected function registerAdminRoutes()
     {
+        // Avoid errors before migrations are applied
         if (!Schema::hasTable('admins')) {
-            return; // Avoid errors before migrations are run
+            return;
         }
 
         $admin = DB::table('admins')->orderBy('created_at', 'asc')->first();
@@ -71,7 +71,20 @@ class WalletServiceProvider extends ServiceProvider
                 if (file_exists(base_path('Modules/Wallets/routes/web.php'))) {
                     $this->loadRoutesFrom(base_path('Modules/Wallets/routes/web.php'));
                 } else {
-                    $this->loadRoutesFrom(__DIR__ . '/routes/web.php');
+                    $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+                }
+            });
+    }
+
+    protected function registerApiRoutes()
+    {
+        Route::middleware('api')
+            ->prefix('api/v1/wallets')
+            ->group(function () {
+                if (file_exists(base_path('Modules/Wallets/routes/api.php'))) {
+                    $this->loadRoutesFrom(base_path('Modules/Wallets/routes/api.php'));
+                } else {
+                    $this->loadRoutesFrom(__DIR__ . '/../routes/api.php');
                 }
             });
     }

@@ -9,17 +9,17 @@ use admin\wallets\Models\Wallet;
 use admin\wallets\Models\WalletTransaction;
 use admin\wallets\Models\WithdrawRequest;
 use Stripe\Stripe;
+use Stripe\StripeClient;
 use Illuminate\Support\Facades\DB;
-use admin\wallets\Models\Wallet;
 use admin\wallets\Requests\Api\WalletWithdrawRequest;
-use Illuminate\Support\Facades\Mail;
+use App\Models\User as AppUser;
 
 
 class WalletController extends Controller
 {
     public function __construct()
     {
-        Stripe::setApiKey(config('services.stripe.secretKey'));
+        Stripe::setApiKey(config('services.stripe.secret'));
     }
     
     protected function getUserOrFail()
@@ -56,8 +56,8 @@ class WalletController extends Controller
         ]);
 
         $amount   = $request->amount;
-        $currency = config('services.stripe.stripeCurrency', 'usd');
-        $stripe   = new StripeClient(config('services.stripe.secretKey'));
+        $currency = config('services.stripe.currency', 'usd');
+        $stripe   = new StripeClient(config('services.stripe.secret'));
 
         try {
             // Create Stripe customer if not exists
@@ -99,7 +99,7 @@ class WalletController extends Controller
             'payment_intent_id' => 'required|string',
         ]);
 
-        $stripe = new StripeClient(config('services.stripe.secretKey'));
+        $stripe = new StripeClient(config('services.stripe.secret'));
 
         try {
             $paymentIntent = $stripe->paymentIntents->retrieve($request->payment_intent_id);
@@ -115,17 +115,19 @@ class WalletController extends Controller
                 $wallet->increment('balance', $amount);
 
                 WalletTransaction::create([
-                    'user_id'        => $user->id,
-                    'type'           => 'deposit',
-                    'amount'         => $amount,
-                    'status'         => 'succeeded',
-                    'transaction_id' => $paymentIntent->id,
-                    'description'    => 'Wallet deposit via Stripe',
+                    'user_id'          => $user->id,
+                    'type'             => 'deposit',
+                    'amount'           => $amount,
+                    'status'           => 'completed',
+                    'related_user_id'  => null,
+                    'description'      => 'Wallet deposit via Stripe',
+                    'admin_commission' => 0,
                 ]);
             });
 
+            $balance = (float) (Wallet::where('user_id', $user->id)->value('balance') ?? 0);
             return $this->respond(true, 200, 'Wallet updated successfully.', [
-                'balance' => $user->wallet->balance
+                'balance' => $balance
             ]);
         } catch (\Exception $e) {
             return $this->respond(false, 400, 'Deposit confirmation failed: '.$e->getMessage());
@@ -138,9 +140,8 @@ class WalletController extends Controller
         if (!$user instanceof \App\Models\User) return $user;
 
         try {
-            $wallet   = $user->wallet;
-            $balance  = $wallet ? $wallet->balance : 0.00;
-            $currency = config('services.stripe.stripeCurrency', 'usd');
+            $balance  = (float) (Wallet::where('user_id', $user->id)->value('balance') ?? 0);
+            $currency = config('services.stripe.currency', 'usd');
 
             return $this->respond(true, 200, 'Wallet balance fetched successfully.', [
                 'balance'  => $balance,
@@ -158,9 +159,9 @@ class WalletController extends Controller
 
         $amount   = (float) $request->amount;
         $currency = config('services.stripe.currency_sign', '$');
-        $wallet   = $user->wallet;
+        $currentBalance = (float) (Wallet::where('user_id', $user->id)->value('balance') ?? 0);
 
-        if (!$wallet || $wallet->balance < $amount) {
+        if ($currentBalance < $amount) {
             return $this->respond(false, 400, 'Insufficient wallet balance.');
         }
 
@@ -182,12 +183,13 @@ class WalletController extends Controller
                     'user_id'        => $user->id,
                     'amount'         => $amount,
                     'method'         => $request->method,
-                    'method_details' => json_encode($request->method_details),
+                    'method_details' => $request->method_details ?? [],
                 ]);
             });
 
+            $newBalance = (float) (Wallet::where('user_id', $user->id)->value('balance') ?? 0);
             return $this->respond(true, 200, 'Withdrawal request submitted successfully.', [
-                'balance' => $wallet->balance
+                'balance' => $newBalance
             ]);
         } catch (\Exception $e) {
             return $this->respond(false, 400, 'Withdrawal failed: '.$e->getMessage());
@@ -223,7 +225,7 @@ class WalletController extends Controller
         if (!$user instanceof \App\Models\User) return $user;
 
         try {
-            $transactions = $user->transactions()
+            $transactions = WalletTransaction::where('user_id', $user->id)
                 ->latest()
                 ->get();
 
@@ -232,6 +234,70 @@ class WalletController extends Controller
             ]);
         } catch (\Exception $e) {
             return $this->respond(false, 400, 'Fetching history failed: '.$e->getMessage());
+        }
+    }
+
+    public function sendMoney(Request $request)
+    {
+        $user = $this->getUserOrFail();
+        if (!$user instanceof \App\Models\User) return $user;
+
+        $request->validate([
+            'to_user_id' => ['required', 'integer', 'exists:users,id'],
+            'amount'     => ['required', 'numeric', 'min:1'],
+        ]);
+
+        if ((int) $request->to_user_id === (int) $user->id) {
+            return $this->respond(false, 400, 'You cannot send money to yourself.');
+        }
+
+        $amount = (float) $request->amount;
+
+        try {
+            $senderWallet = Wallet::firstOrCreate(['user_id' => $user->id], ['balance' => 0]);
+
+            if ($senderWallet->balance < $amount) {
+                return $this->respond(false, 400, 'Insufficient wallet balance.');
+            }
+
+            $recipient = AppUser::find($request->to_user_id);
+            if (!$recipient) {
+                return $this->respond(false, 404, 'Recipient user not found.');
+            }
+
+            DB::transaction(function () use ($user, $recipient, $amount, $senderWallet) {
+                $senderWallet->decrement('balance', $amount);
+
+                $recipientWallet = Wallet::firstOrCreate(['user_id' => $recipient->id], ['balance' => 0]);
+                $recipientWallet->increment('balance', $amount);
+
+                WalletTransaction::create([
+                    'user_id'          => $user->id,
+                    'type'             => 'send',
+                    'amount'           => $amount,
+                    'status'           => 'completed',
+                    'related_user_id'  => $recipient->id,
+                    'description'      => 'Transfer to user '.$recipient->id,
+                    'admin_commission' => 0,
+                ]);
+
+                WalletTransaction::create([
+                    'user_id'          => $recipient->id,
+                    'type'             => 'receive',
+                    'amount'           => $amount,
+                    'status'           => 'completed',
+                    'related_user_id'  => $user->id,
+                    'description'      => 'Transfer received from user '.$user->id,
+                    'admin_commission' => 0,
+                ]);
+            });
+
+            $balance = (float) (Wallet::where('user_id', $user->id)->value('balance') ?? 0);
+            return $this->respond(true, 200, 'Money sent successfully.', [
+                'balance' => $balance,
+            ]);
+        } catch (\Exception $e) {
+            return $this->respond(false, 400, 'Transfer failed: '.$e->getMessage());
         }
     }
 } 

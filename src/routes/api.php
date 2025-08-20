@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use admin\wallets\Controllers\Api\V1\StripeController;
 use admin\wallets\Controllers\Api\V1\WalletController;
 
-Route::name('api.')->middleware(['web','admin.auth'])->group(function () {  
+Route::name('api.')->middleware(['api','auth:sanctum'])->group(function () {  
     Route::get('connect-stripe', [StripeController::class, 'connectStripe']);
 
     // Wallet API
@@ -17,5 +17,4 @@ Route::name('api.')->middleware(['web','admin.auth'])->group(function () {
         Route::post('send', [WalletController::class, 'sendMoney']);
         Route::get('transactions', [WalletController::class, 'transactionHistory']);
     });
-    
 });

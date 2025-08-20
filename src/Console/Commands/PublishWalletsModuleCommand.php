@@ -14,90 +14,113 @@ class PublishWalletsModuleCommand extends Command
     {
         $this->info('Publishing Wallets module files...');
 
-        // Check if module directory exists
+        // Ensure module base directory exists
         $moduleDir = base_path('Modules/Wallets');
-        if (!File::exists($moduleDir)) {
-            File::makeDirectory($moduleDir, 0755, true);
-        }
+        File::ensureDirectoryExists($moduleDir);
 
-        // Publish with namespace transformation
+        // Publish PHP files with namespace transformation
         $this->publishWithNamespaceTransformation();
-        
-        // Publish other files
-        $this->call('vendor:publish', [
-            '--tag' => 'wallet',
+
+        // Publish config & views from package (if defined in service provider)
+        $this->callSilent('vendor:publish', [
+            '--tag'   => 'wallets',
             '--force' => $this->option('force')
         ]);
 
         // Update composer autoload
         $this->updateComposerAutoload();
 
-        $this->info('Wallets module published successfully!');
-        $this->info('Please run: composer dump-autoload');
+        $this->info("\n✅ Wallets module published successfully!");
+        $this->info("👉 Run: composer dump-autoload");
     }
 
     protected function publishWithNamespaceTransformation()
     {
-        $basePath = dirname(dirname(__DIR__)); // Go up to packages/admin/wallets/src
-        
-        $filesWithNamespaces = [
-            // Controllers
+        $basePath = dirname(dirname(__DIR__)); // packages/admin/wallets/src
+
+        $files = [
+            // Controllers Admin
             $basePath . '/Controllers/TransactionManagerController.php' => base_path('Modules/Wallets/app/Http/Controllers/Admin/TransactionManagerController.php'),
-            $basePath . '/Controllers/WithdrawManagerController.php' => base_path('Modules/Wallets/app/Http/Controllers/Admin/WithdrawManagerController.php'),
-            
+            $basePath . '/Controllers/WithdrawManagerController.php'   => base_path('Modules/Wallets/app/Http/Controllers/Admin/WithdrawManagerController.php'),
+
+            // Controllers Api
+            $basePath . '/Controllers/StripeController.php' => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/StripeController.php'),
+            $basePath . '/Controllers/WalletController.php' => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/WalletController.php'),
+
             // Models
-            $basePath . '/Models/Wallet.php' => base_path('Modules/Wallets/app/Models/Wallet.php'),
+            $basePath . '/Models/Wallet.php'           => base_path('Modules/Wallets/app/Models/Wallet.php'),
             $basePath . '/Models/WalletTransaction.php' => base_path('Modules/Wallets/app/Models/WalletTransaction.php'),
-            $basePath . '/Models/WithdrawRequest.php' => base_path('Modules/Wallets/app/Models/WithdrawRequest.php'),
-            
+            $basePath . '/Models/WithdrawRequest.php'   => base_path('Modules/Wallets/app/Models/WithdrawRequest.php'),
+
             // Routes
             $basePath . '/routes/web.php' => base_path('Modules/Wallets/routes/web.php'),
+            $basePath . '/routes/api.php' => base_path('Modules/Wallets/routes/api.php'),
         ];
 
-        foreach ($filesWithNamespaces as $source => $destination) {
-            if (File::exists($source)) {
-                File::ensureDirectoryExists(dirname($destination));
-                
-                $content = File::get($source);
-                $content = $this->transformNamespaces($content, $source);
-                
-                File::put($destination, $content);
-                $this->info("Published: " . basename($destination));
-            } else {
-                $this->warn("Source file not found: " . $source);
+        foreach ($files as $source => $destination) {
+            if (!File::exists($source)) {
+                $this->warn("⚠️ Source file not found: {$source}");
+                continue;
             }
+
+            File::ensureDirectoryExists(dirname($destination));
+
+            $content = File::get($source);
+            $content = $this->transformNamespaces($content, $destination);
+
+            File::put($destination, $content);
+            $this->info("✅ Published: " . basename($destination));
         }
     }
 
-    protected function transformNamespaces($content, $sourceFile)
+    protected function transformNamespaces(string $content, string $destination): string
     {
-        // Define namespace mappings
-        $namespaceTransforms = [
-            // Main namespace transformations
-            'namespace admin\\wallets\\Controllers;' => 'namespace Modules\\Wallets\\app\\Http\\Controllers\\Admin;',
-            'namespace admin\\wallets\\Models;' => 'namespace Modules\\Wallets\\app\\Models;',
-            'namespace admin\\wallets\\Requests;' => 'namespace Modules\\Wallets\\app\\Http\\Requests;',
-            
-            // Use statements transformations
-            'use admin\\wallets\\Controllers\\' => 'use Modules\\Wallets\\app\\Http\\Controllers\\Admin\\',
-            'use admin\\wallets\\Models\\' => 'use Modules\\Wallets\\app\\Models\\',
-            'use admin\\wallets\\Requests\\' => 'use Modules\\Wallets\\app\\Http\\Requests\\',
-            
-            // Class references in routes
-            'admin\\wallets\\Controllers\\TransactionManagerController' => 'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\TransactionManagerController',
-        ];
-
-        // Apply transformations
-        foreach ($namespaceTransforms as $search => $replace) {
-            $content = str_replace($search, $replace, $content);
+        // Decide namespace based on destination path
+        if (str_contains($destination, '/Controllers/Admin/')) {
+            $content = str_replace(
+                'namespace admin\\wallets\\Controllers;',
+                'namespace Modules\\Wallets\\app\\Http\\Controllers\\Admin;',
+                $content
+            );
+        } elseif (str_contains($destination, '/Controllers/Api/')) {
+            $content = str_replace(
+                'namespace admin\\wallets\\Controllers;',
+                'namespace Modules\\Wallets\\app\\Http\\Controllers\\Api\\V1;',
+                $content
+            );
+        } elseif (str_contains($destination, '/Models/')) {
+            $content = str_replace(
+                'namespace admin\\wallets\\Models;',
+                'namespace Modules\\Wallets\\app\\Models;',
+                $content
+            );
         }
 
-        // Handle specific file types
-        if (str_contains($sourceFile, 'Controllers')) {
-            $content = str_replace('use admin\\wallets\\Models\\Wallet;', 'use Modules\\Wallets\\app\\Models\\Wallet;', $content);
-            $content = str_replace('use admin\\wallets\\Models\\WalletTransaction;', 'use Modules\\Wallets\\app\\Models\\WalletTransaction;', $content);
-            $content = str_replace('use admin\\wallets\\Models\\WithdrawRequest;', 'use Modules\\Wallets\\app\\Models\\WithdrawRequest;', $content);
-        }
+        // Replace use statements
+        $content = str_replace('use admin\\wallets\\Models\\', 'use Modules\\Wallets\\app\\Models\\', $content);
+        $content = str_replace('use admin\\wallets\\Requests\\', 'use Modules\\Wallets\\app\\Http\\Requests\\', $content);
+
+        // Fix route controller references
+        $content = str_replace(
+            'admin\\wallets\\Controllers\\TransactionManagerController',
+            'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\TransactionManagerController',
+            $content
+        );
+        $content = str_replace(
+            'admin\\wallets\\Controllers\\WithdrawManagerController',
+            'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\WithdrawManagerController',
+            $content
+        );
+        $content = str_replace(
+            'admin\\wallets\\Controllers\\StripeController',
+            'Modules\\Wallets\\app\\Http\\Controllers\\Api\\V1\\StripeController',
+            $content
+        );
+        $content = str_replace(
+            'admin\\wallets\\Controllers\\WalletController',
+            'Modules\\Wallets\\app\\Http\\Controllers\\Api\\V1\\WalletController',
+            $content
+        );
 
         return $content;
     }
@@ -107,12 +130,10 @@ class PublishWalletsModuleCommand extends Command
         $composerFile = base_path('composer.json');
         $composer = json_decode(File::get($composerFile), true);
 
-        // Add module namespace to autoload
         if (!isset($composer['autoload']['psr-4']['Modules\\Wallets\\'])) {
             $composer['autoload']['psr-4']['Modules\\Wallets\\'] = 'Modules/Wallets/app/';
-            
             File::put($composerFile, json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-            $this->info('Updated composer.json autoload');
+            $this->info("🔄 Updated composer.json autoload (Modules\\Wallets\\)");
         }
     }
 }

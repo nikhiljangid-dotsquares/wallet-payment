@@ -17,64 +17,72 @@ class CheckModuleStatusCommand extends Command
         // Check if module files exist
         $moduleFiles = [
             'Controller: TransactionManagerController' => base_path('Modules/Wallets/app/Http/Controllers/Admin/TransactionManagerController.php'),
-            'Controller: WithdrawManagerController' => base_path('Modules/Wallets/app/Http/Controllers/Admin/WithdrawManagerController.php'),
-            'Model' => base_path('Modules/Wallets/app/Models/Wallet.php'),
-            'Model' => base_path('Modules/Wallets/app/Models/WalletTransaction.php'),
-            'Model' => base_path('Modules/Wallets/app/Models/WithdrawRequest.php'),
-            'Routes' => base_path('Modules/Wallets/routes/web.php'),
-            'Views' => base_path('Modules/Wallets/resources/views'),
-            'Config' => base_path('Modules/Wallets/config/wallets.php'),
+            'Controller: WithdrawManagerController'    => base_path('Modules/Wallets/app/Http/Controllers/Admin/WithdrawManagerController.php'),
+            'Controller: StripeController'             => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/StripeController.php'),
+            'Controller: WalletController'             => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/WalletController.php'),
+            'Model: Wallet'                            => base_path('Modules/Wallets/app/Models/Wallet.php'),
+            'Model: WalletTransaction'                 => base_path('Modules/Wallets/app/Models/WalletTransaction.php'),
+            'Model: WithdrawRequest'                   => base_path('Modules/Wallets/app/Models/WithdrawRequest.php'),
+            'Routes: web.php'                          => base_path('Modules/Wallets/routes/web.php'),
+            'Routes: api.php'                          => base_path('Modules/Wallets/routes/api.php'),
+            'Views'                                    => base_path('Modules/Wallets/resources/views'),
+            'Config'                                   => base_path('Modules/Wallets/config/wallets.php'),
         ];
 
-        $this->info("\n Module Files Status:");
-        foreach ($moduleFiles as $type => $path) {
+        $this->info("\n📂 Module Files Status:");
+        foreach ($moduleFiles as $label => $path) {
             if (File::exists($path)) {
-                $this->info(" {$type}: EXISTS");
-                
-                // Check if it's a PHP file and show last modified time
+                $this->info(" ✅ {$label}: EXISTS");
+
+                // Show last modified for PHP files
                 if (str_ends_with($path, '.php')) {
                     $lastModified = date('Y-m-d H:i:s', filemtime($path));
-                    $this->line("   Last modified: {$lastModified}");
+                    $this->line("    Last modified: {$lastModified}");
                 }
             } else {
-                $this->error(" {$type}: NOT FOUND");
+                $this->error(" ❌ {$label}: NOT FOUND");
             }
         }
 
-        // Check namespace in controller
-        // $controllerPath = base_path('Modules/Wallets/app/Http/Controllers/Admin/TransactionManagerController.php');
-        // $controllerPath = base_path('Modules/Wallets/app/Http/Controllers/Admin/WithdrawManagerController.php');
+        $this->info("\n🧭 Namespace Validation:");
         $controllers = [
-            base_path('Modules/Wallets/app/Http/Controllers/Admin/TransactionManagerController.php'),
-            base_path('Modules/Wallets/app/Http/Controllers/Admin/WithdrawManagerController.php'),
+            'TransactionManagerController' => base_path('Modules/Wallets/app/Http/Controllers/Admin/TransactionManagerController.php'),
+            'WithdrawManagerController'    => base_path('Modules/Wallets/app/Http/Controllers/Admin/WithdrawManagerController.php'),
+            'StripeController'             => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/StripeController.php'),
+            'WalletController'             => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/WalletController.php'),
         ];
 
-        foreach ($controllers as $controllerPath) {
+        foreach ($controllers as $name => $controllerPath) {
             if (File::exists($controllerPath)) {
                 $content = File::get($controllerPath);
-                if (str_contains($content, 'namespace Modules\Wallets\app\Http\Controllers\Admin;')) {
-                    $this->info("\n Controller namespace: CORRECT");
+
+                preg_match('/^namespace\s+([^;]+);/m', $content, $matches);
+                $namespace = $matches[1] ?? 'N/A';
+
+                if (str_starts_with($namespace, 'Modules\\Wallets')) {
+                    $this->info(" ✅ {$name} namespace: {$namespace}");
                 } else {
-                    $this->error("\n Controller namespace: INCORRECT");
+                    $this->error(" ❌ {$name} namespace incorrect: {$namespace}");
                 }
-                
-                // Check for test comment
+
+                // Check persistence marker
                 if (str_contains($content, 'Test comment - this should persist after refresh')) {
-                    $this->info("Test comment: FOUND (changes are persisting)");
+                    $this->line("    Test comment: FOUND (changes persist)");
                 } else {
-                    $this->warn("Test comment: NOT FOUND");
+                    $this->warn("    Test comment: NOT FOUND");
                 }
             }
         }
 
         // Check composer autoload
+        $this->info("\n📦 Composer Autoload:");
         $composerFile = base_path('composer.json');
         if (File::exists($composerFile)) {
             $composer = json_decode(File::get($composerFile), true);
             if (isset($composer['autoload']['psr-4']['Modules\\Wallets\\'])) {
-                $this->info("\n Composer autoload: CONFIGURED");
+                $this->info(" ✅ Composer autoload: CONFIGURED");
             } else {
-                $this->error("\n Composer autoload: NOT CONFIGURED");
+                $this->error(" ❌ Composer autoload: NOT CONFIGURED");
             }
         }
 

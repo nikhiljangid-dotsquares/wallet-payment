@@ -34,6 +34,11 @@ class WalletTransaction extends Model
         'admin_commission' => 'decimal:2',
     ];
 
+    public function scopeLatest($query)
+    {
+        return $query->orderBy('created_at', 'desc');
+    }
+
     /**
      * filter by status
      */

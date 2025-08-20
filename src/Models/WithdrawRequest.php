@@ -32,6 +32,11 @@ class WithdrawRequest extends Model
         'method_details' => 'array',
     ];
 
+    public function scopeLatest($query)
+    {
+        return $query->orderBy('created_at', 'desc');
+    }
+
     /**
      * filter by status
      */

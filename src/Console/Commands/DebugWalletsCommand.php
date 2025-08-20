@@ -12,74 +12,83 @@ class DebugWalletsCommand extends Command
 
     public function handle()
     {
-        $this->info('Debugging Wallets Module...');
+        $this->info('🔍 Debugging Wallets Module...');
 
-        // Check route file loading
-        $this->info("\n Route Files:");
-        $moduleRoutes = base_path('Modules/Wallets/routes/web.php');
-        if (File::exists($moduleRoutes)) {
-            $this->info("Module routes found: {$moduleRoutes}");
-            $this->info("Last modified: " . date('Y-m-d H:i:s', filemtime($moduleRoutes)));
-        } else {
-            $this->error(" Module routes not found");
-        }
-
-        $packageRoutes = base_path('packages/admin/wallets/src/routes/web.php');
-        if (File::exists($packageRoutes)) {
-            $this->info(" Package routes found: {$packageRoutes}");
-            $this->info(" Last modified: " . date('Y-m-d H:i:s', filemtime($packageRoutes)));
-        } else {
-            $this->error(" Package routes not found");
-        }
-        
-        // Check view loading priority
-        $this->info("\n View Loading Priority:");
-        $viewPaths = [
-            'Module views' => base_path('Modules/Wallets/resources/views'),
-            'Published views' => resource_path('views/admin/wallet'),
-            'Package views' => base_path('packages/admin/wallets/resources/views'),
+        // ✅ Check route files
+        $this->info("\n📌 Route Files:");
+        $routeFiles = [
+            'Module web.php'    => base_path('Modules/Wallets/routes/web.php'),
+            'Module api.php'    => base_path('Modules/Wallets/routes/api.php'),
+            'Package web.php'   => base_path('packages/admin/wallets/src/routes/web.php'),
+            'Package api.php'   => base_path('packages/admin/wallets/src/routes/api.php'),
         ];
-        
-        foreach ($viewPaths as $name => $path) {
+
+        foreach ($routeFiles as $label => $path) {
             if (File::exists($path)) {
-                $this->info(" {$name}: {$path}");
+                $this->info(" ✅ {$label}: FOUND");
+                $this->line("    Path: {$path}");
+                $this->line("    Last modified: " . date('Y-m-d H:i:s', filemtime($path)));
             } else {
-                $this->warn(" {$name}: NOT FOUND - {$path}");
+                $this->error(" ❌ {$label}: NOT FOUND ({$path})");
             }
         }
-        
-        // Check controller resolution
-        $this->info("\n Controller Resolution:");
+
+        // ✅ Check view loading priority
+        $this->info("\n🖼️ View Loading Priority:");
+        $viewPaths = [
+            'Module views'    => base_path('Modules/Wallets/resources/views'),
+            'Published views' => resource_path('views/admin/wallet'),
+            'Package views'   => base_path('packages/admin/wallets/resources/views'),
+        ];
+
+        foreach ($viewPaths as $label => $path) {
+            if (File::isDirectory($path)) {
+                $this->info(" ✅ {$label}: EXISTS ({$path})");
+            } else {
+                $this->warn(" ⚠️ {$label}: NOT FOUND ({$path})");
+            }
+        }
+
+        // ✅ Check controllers
+        $this->info("\n🧭 Controller Resolution:");
         $controllers = [
-            'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\TransactionManagerController',
-            'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\WithdrawManagerController',
+            'Modules\\Wallets\\App\\Http\\Controllers\\Admin\\TransactionManagerController',
+            'Modules\\Wallets\\App\\Http\\Controllers\\Admin\\WithdrawManagerController',
+            'Modules\\Wallets\\App\\Http\\Controllers\\Api\\V1\\StripeController',
+            'Modules\\Wallets\\App\\Http\\Controllers\\Api\\V1\\WalletController',
         ];
-        foreach ($controllers as $controllerClass) {
-            if (class_exists($controllerClass)) {
-                $this->info(" Controller class exists: {$controllerClass}");
+
+        foreach ($controllers as $class) {
+            if (class_exists($class)) {
+                $this->info(" ✅ Controller class exists: {$class}");
             } else {
-                $this->error(" Controller class not found: {$controllerClass}");
+                $this->error(" ❌ Controller class NOT FOUND: {$class}");
             }
         }
 
-        // Check model resolution
-        $this->info("\n Model Resolution:");
+        // ✅ Check models
+        $this->info("\n📦 Model Resolution:");
         $models = [
-            'Modules\\Wallets\\app\\Models\\Wallet',
-            'Modules\\Wallets\\app\\Models\\WalletTransaction',
-            'Modules\\Wallets\\app\\Models\\WithdrawRequest',
+            'Modules\\Wallets\\App\\Models\\Wallet',
+            'Modules\\Wallets\\App\\Models\\WalletTransaction',
+            'Modules\\Wallets\\App\\Models\\WithdrawRequest',
         ];
-        
-        foreach ($models as $modelClass) {
-            if (class_exists($modelClass)) {
-                $this->info(" Model class exists: {$modelClass}");
+
+        foreach ($models as $class) {
+            if (class_exists($class)) {
+                $this->info(" ✅ Model class exists: {$class}");
             } else {
-                $this->error(" Model class not found: {$modelClass}");
+                $this->error(" ❌ Model class NOT FOUND: {$class}");
             }
         }
 
-        $this->info("\n Recommendations:");
-        $this->info("- Module files take priority over package files");
-        $this->info("- If module view doesn't exist, it will fallback to package view");
+        // ✅ Recommendations
+        $this->info("\n💡 Recommendations:");
+        $this->line("- Module files take priority over package files if both exist.");
+        $this->line("- If a view is missing in the module, Laravel will fallback to package view.");
+        $this->line("- If controllers/models are not found, check:");
+        $this->line("   • Namespace in the PHP file matches PSR-4 autoload (Modules\\Wallets\\App\\...).");
+        $this->line("   • Run `composer dump-autoload` to refresh class map.");
+        $this->line("   • Ensure module is registered in `composer.json` autoload.");
     }
 }

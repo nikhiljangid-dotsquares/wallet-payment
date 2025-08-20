@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Config;
 use Kyslik\ColumnSortable\Sortable;
+use App\Models\User;
 
 class Wallet extends Model
 {
@@ -40,5 +41,10 @@ class Wallet extends Model
         return Config::has('get.admin_page_limit')
             ? Config::get('get.admin_page_limit')
             : 10;
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
