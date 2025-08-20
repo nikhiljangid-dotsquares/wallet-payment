@@ -71,7 +71,7 @@ class WalletServiceProvider extends ServiceProvider
                 if (file_exists(base_path('Modules/Wallets/routes/web.php'))) {
                     $this->loadRoutesFrom(base_path('Modules/Wallets/routes/web.php'));
                 } else {
-                    $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+                    $this->loadRoutesFrom(__DIR__ . '/routes/web.php');
                 }
             });
     }
@@ -84,7 +84,7 @@ class WalletServiceProvider extends ServiceProvider
                 if (file_exists(base_path('Modules/Wallets/routes/api.php'))) {
                     $this->loadRoutesFrom(base_path('Modules/Wallets/routes/api.php'));
                 } else {
-                    $this->loadRoutesFrom(__DIR__ . '/../routes/api.php');
+                    $this->loadRoutesFrom(__DIR__ . '/routes/api.php');
                 }
             });
     }
