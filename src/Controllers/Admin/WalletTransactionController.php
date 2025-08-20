@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use admin\wallets\Models\WalletTransaction;
 
-class TransactionManagerController extends Controller
+class WalletTransactionController extends Controller
 {
     /**
      * Display a listing of the resource.

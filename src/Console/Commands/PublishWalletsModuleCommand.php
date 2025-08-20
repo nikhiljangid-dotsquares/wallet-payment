@@ -40,11 +40,11 @@ class PublishWalletsModuleCommand extends Command
 
         $files = [
             // Controllers Admin
-            $basePath . '/Controllers/Admin/TransactionManagerController.php' => base_path('Modules/Wallets/app/Http/Controllers/Admin/TransactionManagerController.php'),
-            $basePath . '/Controllers/Admin/WithdrawManagerController.php'   => base_path('Modules/Wallets/app/Http/Controllers/Admin/WithdrawManagerController.php'),
+            $basePath . '/Controllers/Admin/WalletTransactionController.php' => base_path('Modules/Wallets/app/Http/Controllers/Admin/WalletTransactionController.php'),
+            $basePath . '/Controllers/Admin/WalletWithdrawController.php'   => base_path('Modules/Wallets/app/Http/Controllers/Admin/WalletWithdrawController.php'),
 
             // Controllers Api
-            $basePath . '/Controllers/Api/V1/StripeController.php' => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/StripeController.php'),
+            $basePath . '/Controllers/Api/V1/WelletStripeController.php' => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/WelletStripeController.php'),
             $basePath . '/Controllers/Api/V1/WalletController.php' => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/WalletController.php'),
 
             // Models
@@ -102,18 +102,18 @@ class PublishWalletsModuleCommand extends Command
 
         // Fix route controller references
         $content = str_replace(
-            'admin\\wallets\\Controllers\\TransactionManagerController',
-            'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\TransactionManagerController',
+            'admin\\wallets\\Controllers\\WalletTransactionController',
+            'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\WalletTransactionController',
             $content
         );
         $content = str_replace(
-            'admin\\wallets\\Controllers\\WithdrawManagerController',
-            'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\WithdrawManagerController',
+            'admin\\wallets\\Controllers\\WalletWithdrawController',
+            'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\WalletWithdrawController',
             $content
         );
         $content = str_replace(
-            'admin\\wallets\\Controllers\\StripeController',
-            'Modules\\Wallets\\app\\Http\\Controllers\\Api\\V1\\StripeController',
+            'admin\\wallets\\Controllers\\WelletStripeController',
+            'Modules\\Wallets\\app\\Http\\Controllers\\Api\\V1\\WelletStripeController',
             $content
         );
         $content = str_replace(

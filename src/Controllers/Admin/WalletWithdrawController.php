@@ -13,7 +13,7 @@ use Stripe\Stripe;
 use Stripe\Transfer;
 
 
-class WithdrawManagerController extends Controller
+class WalletWithdrawController extends Controller
 {
     /**
      * Display a listing of the resource.

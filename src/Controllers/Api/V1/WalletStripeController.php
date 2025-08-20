@@ -12,7 +12,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Log;
 
 
-class StripeController extends Controller
+class WelletStripeController extends Controller
 {
     public function __construct()
     {

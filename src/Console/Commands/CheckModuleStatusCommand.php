@@ -16,17 +16,17 @@ class CheckModuleStatusCommand extends Command
         
         // Check if module files exist
         $moduleFiles = [
-            'Controller: TransactionManagerController' => base_path('Modules/Wallets/app/Http/Controllers/Admin/TransactionManagerController.php'),
-            'Controller: WithdrawManagerController'    => base_path('Modules/Wallets/app/Http/Controllers/Admin/WithdrawManagerController.php'),
-            'Controller: StripeController'             => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/StripeController.php'),
-            'Controller: WalletController'             => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/WalletController.php'),
-            'Model: Wallet'                            => base_path('Modules/Wallets/app/Models/Wallet.php'),
-            'Model: WalletTransaction'                 => base_path('Modules/Wallets/app/Models/WalletTransaction.php'),
-            'Model: WithdrawRequest'                   => base_path('Modules/Wallets/app/Models/WithdrawRequest.php'),
-            'Routes: web.php'                          => base_path('Modules/Wallets/routes/web.php'),
-            'Routes: api.php'                          => base_path('Modules/Wallets/routes/api.php'),
-            'Views'                                    => base_path('Modules/Wallets/resources/views'),
-            'Config'                                   => base_path('Modules/Wallets/config/wallet.php'),
+            'Controller: WalletTransactionController' => base_path('Modules/Wallets/app/Http/Controllers/Admin/WalletTransactionController.php'),
+            'Controller: WalletWithdrawController'    => base_path('Modules/Wallets/app/Http/Controllers/Admin/WalletWithdrawController.php'),
+            'Controller: WelletStripeController'      => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/WelletStripeController.php'),
+            'Controller: WalletController'            => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/WalletController.php'),
+            'Model: Wallet'                           => base_path('Modules/Wallets/app/Models/Wallet.php'),
+            'Model: WalletTransaction'                => base_path('Modules/Wallets/app/Models/WalletTransaction.php'),
+            'Model: WithdrawRequest'                  => base_path('Modules/Wallets/app/Models/WithdrawRequest.php'),
+            'Routes: web.php'                         => base_path('Modules/Wallets/routes/web.php'),
+            'Routes: api.php'                         => base_path('Modules/Wallets/routes/api.php'),
+            'Views'                                   => base_path('Modules/Wallets/resources/views'),
+            'Config'                                  => base_path('Modules/Wallets/config/wallet.php'),
         ];
 
         $this->info("\n📂 Module Files Status:");
@@ -46,9 +46,9 @@ class CheckModuleStatusCommand extends Command
 
         $this->info("\n🧭 Namespace Validation:");
         $controllers = [
-            'TransactionManagerController' => base_path('Modules/Wallets/app/Http/Controllers/Admin/TransactionManagerController.php'),
-            'WithdrawManagerController'    => base_path('Modules/Wallets/app/Http/Controllers/Admin/WithdrawManagerController.php'),
-            'StripeController'             => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/StripeController.php'),
+            'WalletTransactionController' => base_path('Modules/Wallets/app/Http/Controllers/Admin/WalletTransactionController.php'),
+            'WalletWithdrawController'    => base_path('Modules/Wallets/app/Http/Controllers/Admin/WalletWithdrawController.php'),
+            'WelletStripeController'             => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/WelletStripeController.php'),
             'WalletController'             => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/WalletController.php'),
         ];
 

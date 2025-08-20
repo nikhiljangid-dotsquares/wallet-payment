@@ -52,9 +52,9 @@ class DebugWalletsCommand extends Command
         // ✅ Check controllers
         $this->info("\n🧭 Controller Resolution:");
         $controllers = [
-            'Modules\\Wallets\\App\\Http\\Controllers\\Admin\\TransactionManagerController',
-            'Modules\\Wallets\\App\\Http\\Controllers\\Admin\\WithdrawManagerController',
-            'Modules\\Wallets\\App\\Http\\Controllers\\Api\\V1\\StripeController',
+            'Modules\\Wallets\\App\\Http\\Controllers\\Admin\\WalletTransactionController',
+            'Modules\\Wallets\\App\\Http\\Controllers\\Admin\\WalletWithdrawController',
+            'Modules\\Wallets\\App\\Http\\Controllers\\Api\\V1\\WelletStripeController',
             'Modules\\Wallets\\App\\Http\\Controllers\\Api\\V1\\WalletController',
         ];
 
