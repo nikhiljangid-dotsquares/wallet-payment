@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('stripe_customer_id')->nullable()->after('password');
             $table->string('stripe_account_id')->nullable()->after('stripe_customer_id');
             $table->string('wallet_referral_code', 20)->nullable()->after('stripe_account_id');
-            $table->string('wallet_referred_by', 20)->nullable()->after('wallet_referral_code'); // Code used during registration
+            $table->string('wallet_referred_by', 20)->nullable()->after('wallet_referral_code'); 
         });
     }
 
@@ -25,7 +25,12 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['wallet_referral_code', 'wallet_referred_by', 'stripe_customer_id', 'stripe_account_id']);
+            $table->dropColumn([
+                'wallet_referred_by',
+                'wallet_referral_code',
+                'stripe_account_id',
+                'stripe_customer_id',
+            ]);
         });
     }
 };
