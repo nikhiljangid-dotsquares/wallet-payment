@@ -106,7 +106,6 @@ class WalletStripeController extends Controller
 
         $checkuser->update([
             'stripe_account_id'  => $account->id,
-            'profile_step'       => 3,
         ]);
 
         return $account->id;
