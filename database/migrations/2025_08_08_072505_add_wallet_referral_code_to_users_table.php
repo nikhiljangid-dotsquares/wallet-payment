@@ -25,8 +25,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('wallet_referral_code');
-            $table->dropColumn('wallet_referred_by');
+            $table->dropColumn(['wallet_referral_code', 'wallet_referred_by', 'stripe_customer_id', 'stripe_account_id']);
         });
     }
 };
