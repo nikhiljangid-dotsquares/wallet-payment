@@ -52,6 +52,9 @@ class PublishWalletsModuleCommand extends Command
             $basePath . '/Models/WalletTransaction.php' => base_path('Modules/Wallets/app/Models/WalletTransaction.php'),
             $basePath . '/Models/WithdrawRequest.php'   => base_path('Modules/Wallets/app/Models/WithdrawRequest.php'),
 
+            // Requests
+            $basePath . '/Requests/Api/WalletWithdrawRequest.php' => base_path('Modules/Wallets/app/Http/Requests/Api/WalletWithdrawRequest.php'),
+
             // Routes
             $basePath . '/routes/web.php' => base_path('Modules/Wallets/routes/web.php'),
             $basePath . '/routes/api.php' => base_path('Modules/Wallets/routes/api.php'),
@@ -92,6 +95,12 @@ class PublishWalletsModuleCommand extends Command
             $content = str_replace(
                 'namespace admin\\wallets\\Models;',
                 'namespace Modules\\Wallets\\app\\Models;',
+                $content
+            );
+        } elseif (str_contains($destination, '/Requests/')) {
+            $content = str_replace(
+                'namespace admin\\wallets\\Requests\\Api;',
+                'namespace Modules\\Wallets\\app\\Http\\Requests\\Api;',
                 $content
             );
         }

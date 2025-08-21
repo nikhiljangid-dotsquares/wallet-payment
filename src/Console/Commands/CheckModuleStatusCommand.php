@@ -23,6 +23,7 @@ class CheckModuleStatusCommand extends Command
             'Model: Wallet'                           => base_path('Modules/Wallets/app/Models/Wallet.php'),
             'Model: WalletTransaction'                => base_path('Modules/Wallets/app/Models/WalletTransaction.php'),
             'Model: WithdrawRequest'                  => base_path('Modules/Wallets/app/Models/WithdrawRequest.php'),
+            'Request: WalletWithdrawRequest'          => base_path('Modules/Wallets/app/Http/Requests/Api/WalletWithdrawRequest.php'),
             'Routes: web.php'                         => base_path('Modules/Wallets/routes/web.php'),
             'Routes: api.php'                         => base_path('Modules/Wallets/routes/api.php'),
             'Views'                                   => base_path('Modules/Wallets/resources/views'),

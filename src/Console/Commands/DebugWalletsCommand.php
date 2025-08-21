@@ -69,9 +69,9 @@ class DebugWalletsCommand extends Command
         // ✅ Check models
         $this->info("\n📦 Model Resolution:");
         $models = [
-            'Modules\\Wallets\\App\\Models\\Wallet',
-            'Modules\\Wallets\\App\\Models\\WalletTransaction',
-            'Modules\\Wallets\\App\\Models\\WithdrawRequest',
+            'Modules\\Wallets\\app\\Models\\Wallet',
+            'Modules\\Wallets\\app\\Models\\WalletTransaction',
+            'Modules\\Wallets\\app\\Models\\WithdrawRequest',
         ];
 
         foreach ($models as $class) {
@@ -79,6 +79,20 @@ class DebugWalletsCommand extends Command
                 $this->info(" ✅ Model class exists: {$class}");
             } else {
                 $this->error(" ❌ Model class NOT FOUND: {$class}");
+            }
+        }
+
+        // ✅ Check requests
+        $this->info("\n📋 Request Resolution:");
+        $requests = [
+            'Modules\\Wallets\\app\\Http\\Requests\\Api\\WalletWithdrawRequest',
+        ];
+
+        foreach ($requests as $class) {
+            if (class_exists($class)) {
+                $this->info(" ✅ Request class exists: {$class}");
+            } else {
+                $this->error(" ❌ Request class NOT FOUND: {$class}");
             }
         }
 
