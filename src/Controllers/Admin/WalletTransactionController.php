@@ -38,11 +38,11 @@ class WalletTransactionController extends Controller
     /**
      * show wallet details
      */
-    public function show(WalletTransaction $walletTransaction)
+    public function show(WalletTransaction $transaction)
     {
         try {
             return view('wallet::admin.transactions.show', [
-                'transaction' => $walletTransaction
+                'transaction' => $transaction
             ]);
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to load transactions: ' . $e->getMessage());

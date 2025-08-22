@@ -1,18 +1,18 @@
 @extends('admin::admin.layouts.master')
 
-@section('title', 'Withdrawal Request Details')
+@section('title', 'Wallet Withdrawal Request Details')
 
-@section('page-title', 'Withdrawal Manager')
+@section('page-title', 'Wallet Withdrawal Manager')
 
 @section('breadcrumb')
-    <li class="breadcrumb-item"><a href="{{ route('admin.withdraws.index') }}">Withdrawal Manager</a></li>
-    <li class="breadcrumb-item active" aria-current="page">View Withdrawal Request</li>
+    <li class="breadcrumb-item"><a href="{{ route('admin.withdraws.index') }}">Wallet Withdrawal Manager</a></li>
+    <li class="breadcrumb-item active" aria-current="page">View Wallet Withdrawal Request</li>
 @endsection
 
 @section('content')
 
 @php
-$methodDetails = json_decode($withdraw->method_details);
+$methodDetails = $withdraw->method_details ?? [];
 $statusClass = 'secondary';
 if($withdraw->status == 'approved') {
     $statusClass = 'success';
@@ -88,15 +88,17 @@ if($withdraw->status == 'declined') {
                                         <th style="width:230px">Method</th>
                                         <td>{{ ucfirst($withdraw->method) ?? '-' }}</td>
                                     </tr>
-                                    <tr>
-                                        <th colspan="4"><u>Bank Details:</u></th>
-                                    </tr>
-                                    @foreach ($methodDetails ?? [] as $key => $value)
-                                    <tr>
-                                        <th>{{ ucwords(str_replace('_', ' ', $key)) }}</th>
-                                        <td colspan="3">{{ $value ?? '-' }}</td>
-                                    </tr>
-                                    @endforeach
+                                    @if(!empty($methodDetails) && is_array($methodDetails))
+                                        <tr>
+                                            <th colspan="4"><u>Bank Details:</u></th>
+                                        </tr>
+                                        @foreach ($methodDetails as $key => $value)
+                                        <tr>
+                                            <th>{{ ucwords(str_replace('_', ' ', $key)) }}</th>
+                                            <td colspan="3">{{ $value ?? '-' }}</td>
+                                        </tr>
+                                        @endforeach
+                                    @endif
                                 </tbody>
                             </table>
                         </div>

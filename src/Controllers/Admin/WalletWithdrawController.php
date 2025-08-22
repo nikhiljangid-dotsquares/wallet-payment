@@ -45,11 +45,11 @@ class WalletWithdrawController extends Controller
     /**
      * show wallet details
      */
-    public function show(WithdrawRequest $WithdrawRequest)
+    public function show(WithdrawRequest $withdraw)
     {
         try {
             return view('wallet::admin.withdraws.show', [
-                'withdraw' => $WithdrawRequest
+                'withdraw' => $withdraw
             ]);
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to load withdraws: ' . $e->getMessage());

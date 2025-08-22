@@ -7,6 +7,8 @@ use admin\wallets\Controllers\Admin\WalletWithdrawController;
 Route::name('admin.')->middleware(['web','admin.auth'])->group(function () {  
     // Withdraw Request Routes
     Route::resource('withdraws', WalletWithdrawController::class);
+    Route::post('withdraws/{id}/status', [WalletWithdrawController::class, 'changeWithdrawStatus'])
+        ->name('withdraws.changeStatus');
 
     // Transaction History Routes
     Route::resource('transactions', WalletTransactionController::class);

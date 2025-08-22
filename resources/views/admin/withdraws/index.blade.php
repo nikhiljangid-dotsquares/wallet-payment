@@ -68,10 +68,10 @@
                                 <thead class="thead-light">
                                     <tr>
                                         <th scope="col">S. No.</th>
-                                        <th scope="col">@sortablelink('name', 'Name', [], ['style' => 'color: #4F5467; text-decoration: none;'])</th>
-                                        <th scope="col">@sortablelink('amount', 'Amount', [], ['style' => 'color: #4F5467; text-decoration: none;'])</th>
-                                        <th scope="col">@sortablelink('status', 'Status', [], ['style' => 'color: #4F5467; text-decoration: none;'])</th>
-                                        <th scope="col">@sortablelink('created_at', 'Created At', [], ['style' => 'color: #4F5467; text-decoration: none;'])</th>
+                                        <th scope="col">@sortablelink('name', 'Name', [], ['class' => 'text-dark'])</th>
+                                        <th scope="col">@sortablelink('amount', 'Amount', [], ['class' => 'text-dark'])</th>
+                                        <th scope="col">@sortablelink('status', 'Status', [], ['class' => 'text-dark'])</th>
+                                        <th scope="col">@sortablelink('created_at', 'Created At', [], ['class' => 'text-dark'])</th>
                                         <th scope="col">Action</th>
                                     </tr>
                                 </thead>
@@ -129,18 +129,12 @@
                                     @endif
                                 </tbody>
                             </table>
+
+                            <!--pagination move the right side-->
+                            @if ($withdrawList->count() > 0)
+                                {{ $withdrawList->links('admin::pagination.custom-admin-pagination') }}
+                            @endif
                         </div>
-                        @if(isset($withdrawList) && $withdrawList->total() > 0)
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="entries-info">
-                                    Showing {{ $withdrawList->firstItem() }} to {{ $withdrawList->lastItem() }} of
-                                    {{ $withdrawList->total() }} entries
-                                </div>
-                                <div class="pagination-wrapper float-right">
-                                    {{ $withdrawList->links('vendor.pagination.bootstrap-4') }}
-                                </div>
-                            </div>
-                        @endif
                     </div>
                 </div>
             </div>

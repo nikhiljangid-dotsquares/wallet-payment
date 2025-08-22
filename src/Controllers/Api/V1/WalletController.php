@@ -19,7 +19,7 @@ class WalletController extends Controller
 {
     public function __construct()
     {
-        Stripe::setApiKey(config('services.stripe.secret'));
+        Stripe::setApiKey(config('services.stripe.secretKey'));
     }
     
     protected function getUserOrFail()
@@ -56,8 +56,8 @@ class WalletController extends Controller
         ]);
 
         $amount   = $request->amount;
-        $currency = config('services.stripe.currency', 'usd');
-        $stripe   = new StripeClient(config('services.stripe.secret'));
+        $currency = config('services.stripe.stripeCurrency', 'usd');
+        $stripe   = new StripeClient(config('services.stripe.secretKey'));
 
         try {
             // Create Stripe customer if not exists
@@ -99,7 +99,7 @@ class WalletController extends Controller
             'payment_intent_id' => 'required|string',
         ]);
 
-        $stripe = new StripeClient(config('services.stripe.secret'));
+        $stripe = new StripeClient(config('services.stripe.secretKey'));
 
         try {
             $paymentIntent = $stripe->paymentIntents->retrieve($request->payment_intent_id);
@@ -158,7 +158,7 @@ class WalletController extends Controller
         if (!$user instanceof \App\Models\User) return $user;
 
         $amount   = (float) $request->amount;
-        $currency = config('services.stripe.currency_sign', '$');
+        $currency = config('services.stripe.stripeCurrencySign', '$');
         $currentBalance = (float) (Wallet::where('user_id', $user->id)->value('balance') ?? 0);
 
         if ($currentBalance < $amount) {

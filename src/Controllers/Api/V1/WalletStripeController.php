@@ -16,7 +16,7 @@ class WalletStripeController extends Controller
 {
     public function __construct()
     {
-        Stripe::setApiKey(config('services.stripe.secret'));
+        Stripe::setApiKey(config('services.stripe.secretKey'));
     }
 
     protected function respond($status, $code, $message, $data = [])
@@ -52,7 +52,7 @@ class WalletStripeController extends Controller
                     return $this->respond(false, 401, 'Please login again.');
                 }
 
-                $stripe   = new StripeClient(config('services.stripe.secret'));
+                $stripe   = new StripeClient(config('services.stripe.secretKey'));
                 $acctlink = $stripe->accountLinks->create([
                     'account'     => $user->stripe_account_id,
                     'refresh_url' => 'https://connect.stripe.com/reauth',
@@ -79,7 +79,7 @@ class WalletStripeController extends Controller
             return $checkuser->stripe_account_id;
         }
 
-        $stripe = new StripeClient(config('services.stripe.secret'));
+        $stripe = new StripeClient(config('services.stripe.secretKey'));
 
         // Ensure Stripe customer exists
         if (!$checkuser->stripe_customer_id) {
