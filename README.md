@@ -42,7 +42,7 @@ API Side:-
 
 ### 2. Require the package via Composer
     ```bash
-    composer require admin/wallets:dev-main
+    composer require admin/wallets:@dev
     ```
 
 ### 3. Publish assets
@@ -100,7 +100,7 @@ API Side:-
     ],
     ```
 
-### 8. Add this script in any custom js
+### 8. Add Status Change Script in any (custom JS)
 ```bash
     function openModelToChangeStatus(element, currentStatus) {
         var url = $(element).data('url'); // now this works
@@ -174,7 +174,7 @@ API Side:-
 
 ---
 
-## Protecting Admin Routes
+## Protecting Admin/Api Routes
 
 Protect your routes using the provided middleware:
 
