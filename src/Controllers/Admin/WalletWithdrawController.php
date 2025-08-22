@@ -107,7 +107,7 @@ class WalletWithdrawController extends Controller
                     }
 
                     // Example: transfer to connected account
-                    Stripe::setApiKey(config('services.stripe.secret'));
+                    Stripe::setApiKey(config('services.stripe.secretKey'));
 
                     Transfer::create([
                         "amount"      => $withdrawReq->amount * 100, // cents

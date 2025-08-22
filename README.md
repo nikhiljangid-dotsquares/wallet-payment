@@ -1,6 +1,6 @@
 # Admin Wallet & Payment Manager
 
-The Wallet & Payment system was developed to enable seamless money management between users and the platform. It allows users to manage funds, make withdrawal requests, and perform transactions, while enabling the admin to monitor activities, manage requests, and earn commissions. This module improves financial transparency and streamlines payment operations for both users and administrators.
+The Wallet & Payment system was developed to enable seamless money management between users and the platform. It allows users to manage funds, make withdrawal requests, and perform transactions, while enabling the admin to monitor activities, manage requests. This module improves financial transparency and streamlines payment operations for both users and administrators.
 
 ---
 
@@ -17,15 +17,6 @@ API Side:-
 -> User Connect Stripe Account	
 -> My Wallet Transactions
 -> Withdraw request cancellation by user (if status = pending)
--> User referral system (referral bonus added to wallet)
--> Create whole module package wise
--> read documentation how to setup a composer package
--> prepare composer package
--> upload package to github
--> install this package in another laravel project
--> check this package dependencies
--> this package test in another project
--> use this package functionality to another package
 
 ---
 
@@ -108,6 +99,66 @@ API Side:-
         'stripeCurrencySign' => env('STRIPE_CURRENCY_SIGN', '$'),
     ],
     ```
+
+### 8. Add this script in any custom js
+```bash
+    function openModelToChangeStatus(element, currentStatus) {
+        var url = $(element).data('url'); // now this works
+        var id = $(element).data('id'); // optional, if needed
+        console.log("URL:", url);
+        console.log("ID:", id);
+        Swal.fire({
+            title: "Change Withdraw Status",
+            input: "select",
+            inputOptions: {
+                approved: "Approve",
+                declined: "Decline",
+                pending: "Pending"
+            },
+            inputValue: currentStatus,
+            inputPlaceholder: "Select status",
+            showCancelButton: true,
+            confirmButtonText: "Update",
+            cancelButtonText: "Cancel",
+            preConfirm: (selectedStatus) => {
+                if (!selectedStatus) {
+                    Swal.showValidationMessage("Please select a status.");
+                    return false;
+                }
+                return selectedStatus;
+            }
+        }).then((result) => {
+            if (result.isConfirmed && result.value) {
+                changeStatusAjax(id, result.value, url);
+            }
+        });
+    }
+
+    function changeStatusAjax(id, selectedStatus, url) {
+        $.ajax({
+            url: url, // Make sure this matches your Laravel route
+            method: 'POST',
+            data: {
+                status: selectedStatus,
+                _token: $('meta[name="csrf-token"]').attr('content') // CSRF token for Laravel
+            },
+            success: function (response) {
+                toastr.success(response.message || 'Status updated successfully'); // Toastr success
+                // Optionally reload page or update UI dynamically
+                setTimeout(() => {
+                    location.reload();
+                }, 1000); // small delay to show toast before reload
+            },
+            error: function (xhr) {
+                let message = 'Something went wrong.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                toastr.error(message); // Toastr error
+            }
+        });
+    }
+```
 
 ## API Routes (examples)
 

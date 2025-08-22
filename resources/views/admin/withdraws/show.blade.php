@@ -55,10 +55,14 @@ if($withdraw->status == 'declined') {
                                             @endphp
 
                                             @if($withdraw->status === 'pending')
-                                                <button class="btn btn-{{ $statusClass[$withdraw->status] ?? 'secondary' }} btn-sm"
-                                                    onclick="openModelToChangeStatus({{ $withdraw->id }}, '{{ $withdraw->status }}')">
+                                                <a href="javascript:void(0)"
+                                                    data-url="{{ route('admin.withdraws.changeStatus', $withdraw->id) }}"
+                                                    data-id="{{ $withdraw->id }}"
+                                                    data-status="{{ $withdraw->status }}"
+                                                    class="btn btn-{{ $statusClass[$withdraw->status] ?? 'secondary' }} btn-sm"
+                                                    onclick="openModelToChangeStatus(this, '{{ $withdraw->status }}')">
                                                     {{ $label }}
-                                                </button>
+                                                </a>
                                             @else
                                                 <span class="badge badge-{{ $statusClass[$withdraw->status] ?? 'secondary' }}">
                                                     {{ $label }}
