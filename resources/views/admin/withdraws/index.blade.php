@@ -97,7 +97,7 @@
                                                     @endphp
 
                                                     @if($withdraw->status === 'pending')
-                                                        <button class="btn btn-{{ $statusClass[$withdraw->status] ?? 'secondary' }} btn-sm"
+                                                        <button class="btn btn-{{ $statusClass[$withdraw->status] ?? 'secondary' }} btn-sm" data-url="{{ route('admin.withdraws.changeStatus', $withdraw->id) }}"
                                                             onclick="openModelToChangeStatus({{ $withdraw->id }}, '{{ $withdraw->status }}')">
                                                             {{ $label }}
                                                         </button>
