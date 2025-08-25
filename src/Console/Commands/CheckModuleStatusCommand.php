@@ -18,6 +18,7 @@ class CheckModuleStatusCommand extends Command
         $moduleFiles = [
             'Controller: WalletTransactionController' => base_path('Modules/Wallets/app/Http/Controllers/Admin/WalletTransactionController.php'),
             'Controller: WalletWithdrawController'    => base_path('Modules/Wallets/app/Http/Controllers/Admin/WalletWithdrawController.php'),
+            'Controller: WalletWebStripeController'    => base_path('Modules/Wallets/app/Http/Controllers/Admin/WalletWebStripeController.php'),
             'Controller: WalletStripeController'      => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/WalletStripeController.php'),
             'Controller: WalletController'            => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/WalletController.php'),
             'Model: Wallet'                           => base_path('Modules/Wallets/app/Models/Wallet.php'),
@@ -30,10 +31,10 @@ class CheckModuleStatusCommand extends Command
             'Config'                                  => base_path('Modules/Wallets/config/wallet.php'),
         ];
 
-        $this->info("\n📂 Module Files Status:");
+        $this->info("\n Module Files Status:");
         foreach ($moduleFiles as $label => $path) {
             if (File::exists($path)) {
-                $this->info(" ✅ {$label}: EXISTS");
+                $this->info(" {$label}: EXISTS");
 
                 // Show last modified for PHP files
                 if (str_ends_with($path, '.php')) {
@@ -41,14 +42,15 @@ class CheckModuleStatusCommand extends Command
                     $this->line("    Last modified: {$lastModified}");
                 }
             } else {
-                $this->error(" ❌ {$label}: NOT FOUND");
+                $this->error(" {$label}: NOT FOUND");
             }
         }
 
-        $this->info("\n🧭 Namespace Validation:");
+        $this->info("\n Namespace Validation:");
         $controllers = [
             'WalletTransactionController' => base_path('Modules/Wallets/app/Http/Controllers/Admin/WalletTransactionController.php'),
             'WalletWithdrawController'    => base_path('Modules/Wallets/app/Http/Controllers/Admin/WalletWithdrawController.php'),
+            'WalletWebStripeController'    => base_path('Modules/Wallets/app/Http/Controllers/Admin/WalletWebStripeController.php'),
             'WalletStripeController'             => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/WalletStripeController.php'),
             'WalletController'             => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/WalletController.php'),
         ];
@@ -61,29 +63,29 @@ class CheckModuleStatusCommand extends Command
                 $namespace = $matches[1] ?? 'N/A';
 
                 if (str_starts_with($namespace, 'Modules\\Wallets')) {
-                    $this->info(" ✅ {$name} namespace: {$namespace}");
+                    $this->info(" {$name} namespace: {$namespace}");
                 } else {
-                    $this->error(" ❌ {$name} namespace incorrect: {$namespace}");
+                    $this->error(" {$name} namespace incorrect: {$namespace}");
                 }
 
                 // Check persistence marker
                 if (str_contains($content, 'Test comment - this should persist after refresh')) {
-                    $this->line("    Test comment: FOUND (changes persist)");
+                    $this->line("  Test comment: FOUND (changes persist)");
                 } else {
-                    $this->warn("    Test comment: NOT FOUND");
+                    $this->warn("  Test comment: NOT FOUND");
                 }
             }
         }
 
         // Check composer autoload
-        $this->info("\n📦 Composer Autoload:");
+        $this->info("\n Composer Autoload:");
         $composerFile = base_path('composer.json');
         if (File::exists($composerFile)) {
             $composer = json_decode(File::get($composerFile), true);
             if (isset($composer['autoload']['psr-4']['Modules\\Wallets\\'])) {
-                $this->info(" ✅ Composer autoload: CONFIGURED");
+                $this->info(" Composer autoload: CONFIGURED");
             } else {
-                $this->error(" ❌ Composer autoload: NOT CONFIGURED");
+                $this->error(" Composer autoload: NOT CONFIGURED");
             }
         }
 

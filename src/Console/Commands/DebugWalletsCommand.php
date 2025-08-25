@@ -12,10 +12,10 @@ class DebugWalletsCommand extends Command
 
     public function handle()
     {
-        $this->info('🔍 Debugging Wallets Module...');
+        $this->info(' Debugging Wallets Module...');
 
-        // ✅ Check route files
-        $this->info("\n📌 Route Files:");
+        // Check route files
+        $this->info("\n Route Files:");
         $routeFiles = [
             'Module web.php'    => base_path('Modules/Wallets/routes/web.php'),
             'Module api.php'    => base_path('Modules/Wallets/routes/api.php'),
@@ -25,16 +25,16 @@ class DebugWalletsCommand extends Command
 
         foreach ($routeFiles as $label => $path) {
             if (File::exists($path)) {
-                $this->info(" ✅ {$label}: FOUND");
-                $this->line("    Path: {$path}");
-                $this->line("    Last modified: " . date('Y-m-d H:i:s', filemtime($path)));
+                $this->info(" {$label}: FOUND");
+                $this->line(" Path: {$path}");
+                $this->line(" Last modified: " . date('Y-m-d H:i:s', filemtime($path)));
             } else {
-                $this->error(" ❌ {$label}: NOT FOUND ({$path})");
+                $this->error(" {$label}: NOT FOUND ({$path})");
             }
         }
 
-        // ✅ Check view loading priority
-        $this->info("\n🖼️ View Loading Priority:");
+        // Check view loading priority
+        $this->info("\n View Loading Priority:");
         $viewPaths = [
             'Module views'    => base_path('Modules/Wallets/resources/views'),
             'Published views' => resource_path('views/admin/wallet'),
@@ -43,31 +43,32 @@ class DebugWalletsCommand extends Command
 
         foreach ($viewPaths as $label => $path) {
             if (File::isDirectory($path)) {
-                $this->info(" ✅ {$label}: EXISTS ({$path})");
+                $this->info(" {$label}: EXISTS ({$path})");
             } else {
-                $this->warn(" ⚠️ {$label}: NOT FOUND ({$path})");
+                $this->warn(" {$label}: NOT FOUND ({$path})");
             }
         }
 
-        // ✅ Check controllers
-        $this->info("\n🧭 Controller Resolution:");
+        // Check controllers
+        $this->info("\n Controller Resolution:");
         $controllers = [
             'Modules\\Wallets\\App\\Http\\Controllers\\Admin\\WalletTransactionController',
             'Modules\\Wallets\\App\\Http\\Controllers\\Admin\\WalletWithdrawController',
+            'Modules\\Wallets\\App\\Http\\Controllers\\Admin\\WalletWebStripeController',
             'Modules\\Wallets\\App\\Http\\Controllers\\Api\\V1\\WelletStripeController',
             'Modules\\Wallets\\App\\Http\\Controllers\\Api\\V1\\WalletController',
         ];
 
         foreach ($controllers as $class) {
             if (class_exists($class)) {
-                $this->info(" ✅ Controller class exists: {$class}");
+                $this->info(" Controller class exists: {$class}");
             } else {
-                $this->error(" ❌ Controller class NOT FOUND: {$class}");
+                $this->error(" Controller class NOT FOUND: {$class}");
             }
         }
 
-        // ✅ Check models
-        $this->info("\n📦 Model Resolution:");
+        // Check models
+        $this->info("\n Model Resolution:");
         $models = [
             'Modules\\Wallets\\app\\Models\\Wallet',
             'Modules\\Wallets\\app\\Models\\WalletTransaction',
@@ -76,28 +77,28 @@ class DebugWalletsCommand extends Command
 
         foreach ($models as $class) {
             if (class_exists($class)) {
-                $this->info(" ✅ Model class exists: {$class}");
+                $this->info(" Model class exists: {$class}");
             } else {
-                $this->error(" ❌ Model class NOT FOUND: {$class}");
+                $this->error(" Model class NOT FOUND: {$class}");
             }
         }
 
-        // ✅ Check requests
-        $this->info("\n📋 Request Resolution:");
+        // Check requests
+        $this->info("\n Request Resolution:");
         $requests = [
             'Modules\\Wallets\\app\\Http\\Requests\\Api\\WalletWithdrawRequest',
         ];
 
         foreach ($requests as $class) {
             if (class_exists($class)) {
-                $this->info(" ✅ Request class exists: {$class}");
+                $this->info(" Request class exists: {$class}");
             } else {
-                $this->error(" ❌ Request class NOT FOUND: {$class}");
+                $this->error(" Request class NOT FOUND: {$class}");
             }
         }
 
-        // ✅ Recommendations
-        $this->info("\n💡 Recommendations:");
+        // Recommendations
+        $this->info("\n Recommendations:");
         $this->line("- Module files take priority over package files if both exist.");
         $this->line("- If a view is missing in the module, Laravel will fallback to package view.");
         $this->line("- If controllers/models are not found, check:");

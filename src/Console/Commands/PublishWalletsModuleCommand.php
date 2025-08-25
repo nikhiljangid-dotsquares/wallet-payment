@@ -30,18 +30,19 @@ class PublishWalletsModuleCommand extends Command
         // Update composer autoload
         $this->updateComposerAutoload();
 
-        $this->info("\n✅ Wallets module published successfully!");
-        $this->info("👉 Run: composer dump-autoload");
+        $this->info("\n Wallets module published successfully!");
+        $this->info(" Run: composer dump-autoload");
     }
 
     protected function publishWithNamespaceTransformation()
     {
-        $basePath = dirname(dirname(__DIR__)); // .../wallets/src
+        $basePath = dirname(dirname(__DIR__));
 
         $files = [
             // Controllers Admin
             $basePath . '/Controllers/Admin/WalletTransactionController.php' => base_path('Modules/Wallets/app/Http/Controllers/Admin/WalletTransactionController.php'),
             $basePath . '/Controllers/Admin/WalletWithdrawController.php'   => base_path('Modules/Wallets/app/Http/Controllers/Admin/WalletWithdrawController.php'),
+            $basePath . '/Controllers/Admin/WalletWebStripeController.php'   => base_path('Modules/Wallets/app/Http/Controllers/Admin/WalletWebStripeController.php'),
 
             // Controllers Api
             $basePath . '/Controllers/Api/V1/WalletStripeController.php' => base_path('Modules/Wallets/app/Http/Controllers/Api/V1/WalletStripeController.php'),
@@ -62,7 +63,7 @@ class PublishWalletsModuleCommand extends Command
 
         foreach ($files as $source => $destination) {
             if (!File::exists($source)) {
-                $this->warn("⚠️ Source file not found: {$source}");
+                $this->warn(" Source file not found: {$source}");
                 continue;
             }
 
@@ -72,7 +73,7 @@ class PublishWalletsModuleCommand extends Command
             $content = $this->transformNamespaces($content, $destination);
 
             File::put($destination, $content);
-            $this->info("✅ Published: " . basename($destination));
+            $this->info(" Published: " . basename($destination));
         }
     }
 
@@ -123,6 +124,11 @@ class PublishWalletsModuleCommand extends Command
             $content
         );
         $content = str_replace(
+            'admin\\wallets\\Controllers\\WalletWebStripeController',
+            'Modules\\Wallets\\app\\Http\\Controllers\\Admin\\WalletWebStripeController',
+            $content
+        );
+        $content = str_replace(
             'admin\\wallets\\Controllers\\WalletStripeController',
             'Modules\\Wallets\\app\\Http\\Controllers\\Api\\V1\\WalletStripeController',
             $content
@@ -144,7 +150,7 @@ class PublishWalletsModuleCommand extends Command
         if (!isset($composer['autoload']['psr-4']['Modules\\Wallets\\'])) {
             $composer['autoload']['psr-4']['Modules\\Wallets\\'] = 'Modules/Wallets/app/';
             File::put($composerFile, json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-            $this->info("🔄 Updated composer.json autoload (Modules\\Wallets\\)");
+            $this->info(" Updated composer.json autoload (Modules\\Wallets\\)");
         }
     }
 }

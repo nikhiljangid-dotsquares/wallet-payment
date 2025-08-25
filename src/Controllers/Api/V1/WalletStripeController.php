@@ -56,7 +56,7 @@ class WalletStripeController extends Controller
                 $acctlink = $stripe->accountLinks->create([
                     'account'     => $user->stripe_account_id,
                     'refresh_url' => 'https://connect.stripe.com/reauth',
-                    'return_url'  => url('/'),
+                    'return_url'  => route('stripe.connect.account.redirect', $user->id),
                     'type'        => 'account_onboarding',
                 ]);
 
@@ -106,6 +106,7 @@ class WalletStripeController extends Controller
 
         $checkuser->update([
             'stripe_account_id'  => $account->id,
+            'stripe_payouts_enabled' => 0,
         ]);
 
         return $account->id;

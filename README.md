@@ -64,6 +64,14 @@ API Side:-
     ```
 
     ```bash
+    protected $fillable = [
+        'stripe_customer_id',
+        'stripe_account_id',
+        'stripe_payouts_enabled',
+    ];
+    ```
+
+    ```bash
     public function getNameAttribute()
     {
         return trim("{$this->first_name} {$this->last_name}");

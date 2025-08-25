@@ -14,8 +14,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->string('stripe_customer_id')->nullable()->after('password');
             $table->string('stripe_account_id')->nullable()->after('stripe_customer_id');
-            $table->string('wallet_referral_code', 20)->nullable()->after('stripe_account_id');
-            $table->string('wallet_referred_by', 20)->nullable()->after('wallet_referral_code'); 
+            $table->boolean('stripe_payouts_enabled')->default(false)->after('stripe_account_id');
         });
     }
 
@@ -26,8 +25,6 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn([
-                'wallet_referred_by',
-                'wallet_referral_code',
                 'stripe_account_id',
                 'stripe_customer_id',
             ]);
