@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('stripe_customer_id')->nullable()->after('password');
+            $table->string('stripe_customer_id')->nullable()->after('email');
             $table->string('stripe_account_id')->nullable()->after('stripe_customer_id');
             $table->boolean('stripe_payouts_enabled')->default(false)->after('stripe_account_id');
         });
